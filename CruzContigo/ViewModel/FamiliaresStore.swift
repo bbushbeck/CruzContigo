@@ -45,6 +45,9 @@ final class FamiliaresStore {
     func eliminar(_ familiar: Familiar) async {
         do {
             try await repositorio.eliminar(id: familiar.id)
+            if AppConfig.apiBaseURL == nil {
+                try LocalFichaMedicaRepository().eliminar(familiarID: familiar.id)
+            }
             familiares.removeAll { $0.id == familiar.id }
         } catch {
             estado = .error(error.localizedDescription)

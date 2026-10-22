@@ -38,8 +38,21 @@ struct ModuloDestino: View {
 
     var body: some View {
         switch modulo {
+        case .fichaMedica:
+            if let familiarID {
+                FichaMedicaView(familiarID: familiarID)
+            } else {
+                ModuloPendienteView(
+                    modulo: modulo,
+                    familiarID: nil
+                )
+            }
+
         default:
-            ModuloPendienteView(modulo: modulo, familiarID: familiarID)
+            ModuloPendienteView(
+                modulo: modulo,
+                familiarID: familiarID
+            )
         }
     }
 }
