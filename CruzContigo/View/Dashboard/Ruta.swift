@@ -36,6 +36,8 @@ struct ModuloDestino: View {
     let modulo: Modulo
     let familiarID: UUID?
 
+    @Environment(FamiliaresStore.self) private var store
+
     var body: some View {
         switch modulo {
         case .fichaMedica:
@@ -47,6 +49,17 @@ struct ModuloDestino: View {
                     familiarID: nil
                 )
             }
+
+        case .medicamentos:
+            let recipients = store.familiares.map(CareRecipient.init(familiar:))
+            MedicationsView(
+                recipients: recipients,
+                selectedRecipient: recipients.first { $0.id == familiarID },
+                service: DemoMedicationService.compartido
+            )
+
+        case .citas:
+            RecordatoriosView(familiarID: familiarID)
 
         default:
             ModuloPendienteView(

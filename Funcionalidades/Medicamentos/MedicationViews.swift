@@ -10,6 +10,7 @@ struct MedicationsView: View {
     @State private var recipient: CareRecipient
     @State private var status: MedicationStatus = .active
     @State private var showingAdd = false
+    @Environment(\.dismiss) private var dismiss
 
     private let recipients: [CareRecipient]
 
@@ -22,7 +23,25 @@ struct MedicationsView: View {
     }
 
     var body: some View {
-        NavigationStack {
+        VStack(spacing: 0) {
+            HStack {
+                BrandBackButton { dismiss() }
+                Spacer()
+                Text("Medicamentos").font(.headline)
+                Spacer()
+                Button { showingAdd = true } label: {
+                    Image(systemName: "plus")
+                        .font(.title3)
+                        .foregroundColor(.brandRed)
+                        .frame(width: 44, height: 44)
+                        .background(Color.brandRed.opacity(0.08))
+                        .cornerRadius(12)
+                }
+                .accessibilityLabel("Agregar medicamento")
+            }
+            .padding(.horizontal, 24)
+            .padding(.vertical, 12)
+
             ScrollView {
                 VStack(alignment: .leading, spacing: 20) {
                     Menu {
@@ -90,27 +109,20 @@ struct MedicationsView: View {
                 }
                 .padding()
             }
-            .background(Color(.systemGroupedBackground))
-            .navigationTitle("Medicamentos")
-            .toolbar {
-                ToolbarItem(placement: .topBarTrailing) {
-                    Button { showingAdd = true } label: { Image(systemName: "plus") }
-                        .tint(MedicalStyle.red)
-                }
-            }
-            .sheet(isPresented: $showingAdd) {
-                NavigationStack {
-                    MedicationFormView(recipient: recipient, model: model)
-                }
-            }
-            .task { await model.load() }
-            .alert("Error", isPresented: Binding(
-                get: { model.errorMessage != nil },
-                set: { if !$0 { model.errorMessage = nil } }
-            )) {
-                Button("Aceptar", role: .cancel) { model.errorMessage = nil }
-            } message: { Text(model.errorMessage ?? "") }
         }
+        .background(Color(.systemGroupedBackground))
+        .sheet(isPresented: $showingAdd) {
+            NavigationStack {
+                MedicationFormView(recipient: recipient, model: model)
+            }
+        }
+        .task { await model.load() }
+        .alert("Error", isPresented: Binding(
+            get: { model.errorMessage != nil },
+            set: { if !$0 { model.errorMessage = nil } }
+        )) {
+            Button("Aceptar", role: .cancel) { model.errorMessage = nil }
+        } message: { Text(model.errorMessage ?? "") }
         .tint(MedicalStyle.red)
     }
 }
@@ -152,6 +164,7 @@ struct MedicationDetailView: View {
                     }
                 }
                 .navigationTitle("Detalle")
+                .toolbar(.visible, for: .navigationBar)
                 .toolbar {
                     Button("Editar") { showingEdit = true }
                 }
@@ -276,5 +289,7 @@ struct MedicationFormView: View {
 }
 
 #Preview {
-    MedicationsView()
+    NavigationStack {
+        MedicationsView()
+    }
 }

@@ -7,12 +7,15 @@
 
 import SwiftUI
 
-enum UserRole {
+enum UserRole: String {
     case cuidador
     case recibeCuidados
 }
 
 struct OnboardingRoleView: View {
+    var onContinuar: () -> Void = {}
+
+    @AppStorage("rolUsuario") private var rolGuardado: String = UserRole.cuidador.rawValue
     @State private var selectedRole: UserRole? = .cuidador
 
     var body: some View {
@@ -20,12 +23,9 @@ struct OnboardingRoleView: View {
             CompactBrandHeader()
                 .padding(.top, 12)
 
-            header
-                .padding(.top, 20)
-
             ProgressBarView(progress: 0.5)
                 .padding(.horizontal, 24)
-                .padding(.top, 16)
+                .padding(.top, 24)
 
             titleSection
                 .padding(.top, 24)
@@ -42,21 +42,9 @@ struct OnboardingRoleView: View {
 
     // MARK: - Secciones
 
-    private var header: some View {
-        HStack {
-            Button(action: {}) {
-                Image(systemName: "chevron.left")
-                    .font(.title3)
-                    .foregroundColor(.black)
-            }
-            Spacer()
-        }
-        .padding(.horizontal, 24)
-    }
-
     private var titleSection: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Text("PASO 1 DE 2")
+            Text("PASO 2 DE 2")
                 .font(.caption)
                 .fontWeight(.bold)
                 .foregroundColor(.brandRed)
@@ -97,7 +85,10 @@ struct OnboardingRoleView: View {
 
     private var footer: some View {
         VStack(spacing: 14) {
-            PrimaryButton(title: "Continuar", action: {})
+            PrimaryButton(title: "Continuar") {
+                rolGuardado = (selectedRole ?? .cuidador).rawValue
+                onContinuar()
+            }
             Text("Podrás cambiar tu perfil más adelante.")
                 .font(.footnote)
                 .foregroundColor(.secondary)

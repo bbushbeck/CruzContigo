@@ -8,6 +8,9 @@ protocol MedicationService {
 
 /// Persistencia local para probar el módulo sin backend. PRUEBA. NO UTILIZAR COMO SUSTITUTO DE BACKEND o lo que sea no se
 actor DemoMedicationService: MedicationService {
+    /// Instancia compartida para que los cambios sobrevivan al navegar entre pantallas.
+    static let compartido = DemoMedicationService()
+
     private var medications = Medication.examples
 
     func fetchMedications() async throws -> [Medication] { medications }

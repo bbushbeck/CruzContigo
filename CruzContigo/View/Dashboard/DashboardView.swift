@@ -8,6 +8,7 @@ import SwiftUI
 struct DashboardView: View {
     @Environment(FamiliaresStore.self) private var store
     @State private var ruta: [Ruta] = []
+    @AppStorage("onboardingCompletado") private var onboardingCompletado = true
 
     private let columnas = [GridItem(.flexible(), spacing: 12), GridItem(.flexible(), spacing: 12)]
 
@@ -44,15 +45,23 @@ struct DashboardView: View {
                     .font(.title).fontWeight(.bold)
             }
             Spacer()
-            ZStack {
-                RoundedRectangle(cornerRadius: 14)
-                    .fill(Color.brandRed)
-                    .frame(width: 48, height: 48)
-                Image(systemName: "cross.case.fill")
-                    .font(.system(size: 22))
-                    .foregroundColor(.white)
+            Menu {
+                Button(role: .destructive) {
+                    withAnimation { onboardingCompletado = false }
+                } label: {
+                    Label("Cerrar sesión", systemImage: "rectangle.portrait.and.arrow.right")
+                }
+            } label: {
+                ZStack {
+                    RoundedRectangle(cornerRadius: 14)
+                        .fill(Color.brandRed)
+                        .frame(width: 48, height: 48)
+                    Image(systemName: "cross.case.fill")
+                        .font(.system(size: 22))
+                        .foregroundColor(.white)
+                }
             }
-            .accessibilityHidden(true)
+            .accessibilityLabel("Opciones de cuenta")
         }
     }
 
@@ -227,4 +236,5 @@ struct EstadoErrorView: View {
 #Preview {
     DashboardView()
         .environment(FamiliaresStore())
+        .environment(RecordatoriosStore())
 }

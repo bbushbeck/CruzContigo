@@ -8,7 +8,11 @@
 import SwiftUI
 
 struct VerifyPhoneView: View {
+    var onVerificado: () -> Void = {}
+
+    @Environment(\.dismiss) private var dismiss
     @State private var code: String = ""
+    @State private var codigoReenviado = false
 
     private let codeLength = 6
 
@@ -35,7 +39,7 @@ struct VerifyPhoneView: View {
 
     private var header: some View {
         HStack {
-            BrandBackButton(action: {})
+            BrandBackButton { dismiss() }
             Spacer()
         }
         .padding(.horizontal, 24)
@@ -44,6 +48,11 @@ struct VerifyPhoneView: View {
 
     private var titleSection: some View {
         VStack(alignment: .leading, spacing: 6) {
+            Text("PASO 1 DE 2")
+                .font(.caption)
+                .fontWeight(.bold)
+                .foregroundColor(.brandRed)
+
             Text("Verifica tu número")
                 .font(.system(size: 30, weight: .bold))
 
@@ -75,8 +84,11 @@ struct VerifyPhoneView: View {
             Text("¿No recibiste el código?")
                 .font(.subheadline)
                 .foregroundColor(.secondary)
-            Button(action: {}) {
-                Text("Reenviar código")
+            Button {
+                code = ""
+                codigoReenviado = true
+            } label: {
+                Text(codigoReenviado ? "Código reenviado" : "Reenviar código")
                     .font(.subheadline)
                     .fontWeight(.bold)
                     .foregroundColor(.brandRed)
@@ -86,9 +98,11 @@ struct VerifyPhoneView: View {
 
     private var footer: some View {
         VStack(spacing: 16) {
-            PrimaryButton(title: "Verificar y continuar", action: {})
+            PrimaryButton(title: "Verificar y continuar", action: onVerificado)
+                .disabled(code.count < codeLength)
+                .opacity(code.count < codeLength ? 0.5 : 1)
 
-            Button(action: {}) {
+            Button { dismiss() } label: {
                 Text("Cambiar número telefónico")
                     .font(.subheadline)
                     .fontWeight(.bold)

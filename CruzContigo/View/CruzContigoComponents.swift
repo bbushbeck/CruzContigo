@@ -87,30 +87,31 @@ struct CodeInputView: View {
     @FocusState private var isFocused: Bool
 
     var body: some View {
-        ZStack {
-            // Hidden real text field
+        HStack(spacing: 12) {
+            ForEach(0..<length, id: \.self) { index in
+                CodeBoxView(
+                    digit: digit(at: index),
+                    isActive: index == code.count && isFocused
+                )
+            }
+        }
+        .contentShape(Rectangle())
+        .onTapGesture { isFocused = true }
+        // Campo real casi invisible: con tamaño 0 no puede recibir el foco.
+        .background(
             TextField("", text: $code)
                 #if os(iOS)
                 .keyboardType(.numberPad)
+                .textContentType(.oneTimeCode)
                 #endif
                 .focused($isFocused)
-                .frame(width: 0, height: 0)
-                .opacity(0)
-                .onChange(of: code) { newValue in
+                .foregroundStyle(.clear)
+                .tint(.clear)
+                .opacity(0.01)
+                .onChange(of: code) { _, newValue in
                     code = String(newValue.filter { $0.isNumber }.prefix(length))
                 }
-
-            HStack(spacing: 12) {
-                ForEach(0..<length, id: \.self) { index in
-                    CodeBoxView(
-                        digit: digit(at: index),
-                        isActive: index == code.count && isFocused
-                    )
-                }
-            }
-            .contentShape(Rectangle())
-            .onTapGesture { isFocused = true }
-        }
+        )
     }
 
     private func digit(at index: Int) -> String {
