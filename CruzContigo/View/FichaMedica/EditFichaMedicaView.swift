@@ -204,14 +204,14 @@ private struct FilaEditable<Accesorio: View>: View {
             accesorio
             Button(action: eliminar) {
                 Image(systemName: "minus.circle.fill")
-                    .font(.app(.title3))
+                    .icono(.seleccion)
                     .foregroundColor(Color.iconoSuave)
             }
             .accessibilityLabel("Eliminar \(texto)")
         }
         .padding(.horizontal, 14)
         .frame(height: 48)
-        .background(RoundedRectangle(cornerRadius: 14).fill(Color.brandRed.opacity(0.04)))
+        .background(RoundedRectangle(cornerRadius: 14).fill(Color.tintaSuave))
     }
 }
 
@@ -222,10 +222,10 @@ private struct BotonAgregar: View {
     var body: some View {
         Button(action: accion) {
             Image(systemName: "plus")
-                .font(.app(.headline))
+                .icono(.navegacion)
                 .foregroundColor(.white)
                 .frame(width: 48, height: 48)
-                .background(RoundedRectangle(cornerRadius: 14).fill(Color.brandRed))
+                .background(RoundedRectangle(cornerRadius: 14).fill(Color.rojoSolido))
         }
         .disabled(!habilitado)
         .opacity(habilitado ? 1 : 0.4)

@@ -92,7 +92,7 @@ struct DashboardView: View {
                 pestana = .mas
             } label: {
                 Image(systemName: "person.crop.circle")
-                    .font(.app(.title2))
+                    .icono(.navegacion)
                     .foregroundColor(.textoSuave)
                     .frame(width: 44, height: 44)
                     .background(Circle().fill(Color.rellenoSuave))
@@ -271,7 +271,7 @@ struct DashboardView: View {
             }
             HStack(spacing: 14) {
                 Image(systemName: "bell.badge")
-                    .font(.app(.title2))
+                    .icono(.mediano)
                     .foregroundColor(.textoSuave)
                     .frame(width: 44)
                 VStack(alignment: .leading, spacing: 2) {
@@ -315,7 +315,7 @@ struct EstadoVacioFamiliares: View {
                     .fill(Color.clear)
                     .frame(width: 88, height: 88)
                 Image(systemName: "person.2.badge.plus")
-                    .font(.app(.largeTitle))
+                    .icono(.destacado)
                     .foregroundColor(.brandRed)
             }
             .accessibilityHidden(true)
@@ -387,7 +387,7 @@ struct PrimerosPasosView: View {
                     } label: {
                         HStack(spacing: 12) {
                             Image(systemName: paso.hecho ? "checkmark.circle.fill" : "\(paso.id).circle")
-                                .font(.app(.title3))
+                                .icono(.seleccion)
                                 .foregroundColor(paso.hecho ? .green : .brandRed)
                             Text(paso.titulo)
                                 .font(.app(.subheadline).weight(.semibold))
@@ -397,7 +397,7 @@ struct PrimerosPasosView: View {
                             Spacer(minLength: 0)
                             if !paso.hecho {
                                 Image(systemName: "chevron.right")
-                                    .font(.app(.footnote).weight(.semibold))
+                                    .icono(.flecha)
                                     .foregroundColor(Color.iconoSuave)
                             }
                         }
@@ -425,7 +425,7 @@ struct EstadoErrorView: View {
     var body: some View {
         VStack(spacing: 10) {
             Image(systemName: "wifi.exclamationmark")
-                .font(.app(.largeTitle))
+                .icono(.destacado)
                 .foregroundColor(.brandRed)
                 .accessibilityHidden(true)
             Text("No pudimos cargar la información")

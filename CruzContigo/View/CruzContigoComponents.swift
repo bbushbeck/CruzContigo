@@ -12,15 +12,26 @@ import SwiftUI
 extension Color {
     static let brandRed = Color.adaptable(
         claro: UIColor(red: 0.86, green: 0.11, blue: 0.14, alpha: 1),
-        oscuro: UIColor(red: 0.91, green: 0.21, blue: 0.24, alpha: 1),
+        oscuro: UIColor(red: 0.94, green: 0.48, blue: 0.48, alpha: 1),
         claroContraste: UIColor(red: 0.62, green: 0.05, blue: 0.09, alpha: 1),
-        oscuroContraste: UIColor(red: 1.0, green: 0.45, blue: 0.47, alpha: 1)
+        oscuroContraste: UIColor(red: 1.0, green: 0.62, blue: 0.62, alpha: 1)
+    )
+    static let rojoSolido = Color.adaptable(
+        claro: UIColor(red: 0.86, green: 0.11, blue: 0.14, alpha: 1),
+        oscuro: UIColor(red: 0.74, green: 0.20, blue: 0.22, alpha: 1),
+        claroContraste: UIColor(red: 0.62, green: 0.05, blue: 0.09, alpha: 1),
+        oscuroContraste: UIColor(red: 0.62, green: 0.12, blue: 0.14, alpha: 1)
+    )
+    static let fondoApp = Color(uiColor: .systemBackground)
+    static let superficie = Color.adaptable(
+        claro: .systemBackground,
+        oscuro: UIColor(red: 0.11, green: 0.11, blue: 0.12, alpha: 1)
     )
     static let borderGray = Color.adaptable(
         claro: UIColor(white: 0.90, alpha: 1),
-        oscuro: UIColor(white: 0.22, alpha: 1),
+        oscuro: UIColor(white: 0.30, alpha: 1),
         claroContraste: UIColor(white: 0.45, alpha: 1),
-        oscuroContraste: UIColor(white: 0.70, alpha: 1)
+        oscuroContraste: UIColor(white: 0.62, alpha: 1)
     )
 }
 
@@ -58,7 +69,7 @@ struct BrandBackButton: View {
     var body: some View {
         Button(action: action) {
             Image(systemName: "chevron.left")
-                .font(.app(.title3))
+                .icono(.navegacion)
                 .foregroundColor(.brandRed)
                 .frame(width: 44, height: 44)
                 .contentShape(Rectangle())
@@ -79,7 +90,7 @@ struct PrimaryButton: View {
                 .foregroundColor(.white)
                 .frame(maxWidth: .infinity)
                 .frame(height: 56)
-                .background(Color.brandRed)
+                .background(Color.rojoSolido)
                 .cornerRadius(16)
         }
     }
@@ -156,7 +167,7 @@ struct CodeBoxView: View {
                 .frame(width: 48, height: 60)
                 .background(
                     RoundedRectangle(cornerRadius: 14)
-                        .fill(Color(.systemBackground))
+                        .fill(Color.superficie)
                 )
 
             if digit.isEmpty && isActive {

@@ -36,7 +36,7 @@ struct ModuloPendienteView: View {
                         .fill(Color.clear)
                         .frame(width: 96, height: 96)
                     Image(systemName: modulo.icono)
-                        .font(.app(.largeTitle))
+                        .icono(.destacado)
                         .foregroundColor(.brandRed)
                 }
                 .accessibilityHidden(true)

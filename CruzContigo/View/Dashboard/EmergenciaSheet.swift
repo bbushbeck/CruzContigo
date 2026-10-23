@@ -28,7 +28,7 @@ struct EmergenciaSheet: View {
                         dismiss()
                     } label: {
                         Image(systemName: "xmark")
-                            .font(.app(.headline))
+                            .icono(.navegacion)
                             .foregroundColor(.textoSuave)
                             .frame(width: 44, height: 44)
                             .background(Circle().fill(Color.rellenoSuave))
@@ -50,7 +50,7 @@ struct EmergenciaSheet: View {
                 } label: {
                     HStack(spacing: 14) {
                         Image(systemName: "phone.fill")
-                            .font(.app(.title2))
+                            .icono(.grande)
                         VStack(alignment: .leading, spacing: 2) {
                             Text("Llamar a Cruz Roja")
                                 .font(.app(.title3).weight(.bold))
@@ -58,12 +58,13 @@ struct EmergenciaSheet: View {
                                 .font(.app(.subheadline))
                                 .opacity(0.9)
                         }
+                        .multilineTextAlignment(.leading)
                         Spacer()
                     }
                     .foregroundColor(.white)
                     .padding(20)
                     .frame(maxWidth: .infinity, minHeight: 80)
-                    .background(RoundedRectangle(cornerRadius: 20).fill(Color.brandRed))
+                    .background(RoundedRectangle(cornerRadius: 20).fill(Color.rojoSolido))
                 }
                 .accessibilityHint("Pide confirmación y abre el marcador del teléfono")
 
@@ -124,7 +125,7 @@ struct EmergenciaSheet: View {
                         .fill(Color.clear)
                         .frame(width: 48, height: 48)
                     Image(systemName: icono)
-                        .font(.app(.title3))
+                        .icono(.mediano)
                         .foregroundColor(.brandRed)
                 }
                 .accessibilityHidden(true)
@@ -139,7 +140,7 @@ struct EmergenciaSheet: View {
                 .multilineTextAlignment(.leading)
                 Spacer(minLength: 0)
                 Image(systemName: "chevron.right")
-                    .font(.app(.subheadline).weight(.semibold))
+                    .icono(.flecha)
                     .foregroundColor(Color.iconoSuave)
             }
             .padding(16)

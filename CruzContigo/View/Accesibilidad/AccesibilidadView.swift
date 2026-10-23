@@ -200,7 +200,7 @@ struct AccesibilidadView: View {
                 } label: {
                     VStack(spacing: 6) {
                         Image(systemName: opcion.icono)
-                            .font(.app(.title2))
+                            .icono(.grande)
                         Text(opcion.titulo)
                             .font(.app(.footnote).weight(.semibold))
                             .lineLimit(1)
@@ -208,8 +208,8 @@ struct AccesibilidadView: View {
                     }
                     .foregroundColor(activa ? .white : .primary)
                     .frame(maxWidth: .infinity, minHeight: 72)
-                    .background(RoundedRectangle(cornerRadius: 14).fill(activa ? Color.brandRed : Color.rellenoSuave))
-                    .overlay(RoundedRectangle(cornerRadius: 14).stroke(activa ? Color.brandRed : Color.borderGray, lineWidth: 1))
+                    .background(RoundedRectangle(cornerRadius: 14).fill(activa ? Color.rojoSolido : Color.rellenoSuave))
+                    .overlay(RoundedRectangle(cornerRadius: 14).stroke(activa ? Color.rojoSolido : Color.borderGray, lineWidth: 1))
                 }
                 .buttonStyle(.plain)
                 .accessibilityLabel("Apariencia \(opcion.titulo)")
@@ -249,7 +249,7 @@ private struct EtiquetaFila: View {
                     .fill(Color.clear)
                     .frame(width: 34, height: 34)
                 Image(systemName: icono)
-                    .font(.app(.body).weight(.semibold))
+                    .icono(.mediano)
                     .foregroundColor(.brandRed)
             }
             .accessibilityHidden(true)

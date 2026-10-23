@@ -68,7 +68,7 @@ struct FichaMedicaView: View {
                         .foregroundColor(.brandRed)
                         .padding(.horizontal, 14)
                         .frame(height: 44)
-                        .background(Color.brandRed.opacity(0.08))
+                        .background(Color.tintaSuave)
                         .cornerRadius(12)
                 }
             }
@@ -99,7 +99,7 @@ struct FichaMedicaView: View {
                         .fill(Color.clear)
                         .frame(width: 96, height: 96)
                     Image(systemName: "doc.text.fill")
-                        .font(.system(size: 40))
+                        .icono(.destacado)
                         .foregroundColor(.brandRed)
                 }
                 Text("Sin ficha médica")
@@ -171,7 +171,7 @@ struct FichaMedicaView: View {
                     .fill(Color.clear)
                     .frame(width: 64, height: 64)
                 Image(systemName: "drop.fill")
-                    .font(.system(size: 28))
+                    .icono(.grande)
             }
             VStack(alignment: .leading, spacing: 2) {
                 Text("Tipo sanguíneo")
@@ -184,7 +184,7 @@ struct FichaMedicaView: View {
         }
         .foregroundColor(.white)
         .padding(18)
-        .background(RoundedRectangle(cornerRadius: 20).fill(Color.brandRed))
+        .background(RoundedRectangle(cornerRadius: 20).fill(Color.rojoSolido))
         .accessibilityElement(children: .combine)
     }
 }

@@ -8,8 +8,8 @@
 import SwiftUI
 import Observation
 
-private let rojo = Color(red: 0.85, green: 0.04, blue: 0.14)
-private let rosa = Color(red: 1, green: 0.94, blue: 0.95)
+private let rojo = Color.brandRed
+private let rosa = Color.tintaSuave
 
 struct Recordatorio: Identifiable {
     let id = UUID()
@@ -83,10 +83,9 @@ struct RecordatoriosView: View {
                         if familiarID == nil || recordatorio.familiarID == familiarID {
                             HStack(spacing: 12) {
                                 Image(systemName: "bell.fill")
+                                    .icono(.mediano)
                                     .foregroundStyle(rojo)
                                     .padding(12)
-                                    .background(.white)
-                                    .clipShape(Circle())
 
                                 VStack(alignment: .leading, spacing: 5) {
                                     Text(recordatorio.titulo)
@@ -117,7 +116,7 @@ struct RecordatoriosView: View {
                                         ? "checkmark.circle.fill"
                                         : "circle"
                                     )
-                                    .font(.app(.title2))
+                                    .icono(.seleccion)
                                     .foregroundStyle(rojo)
                                 }
                             }
@@ -133,7 +132,7 @@ struct RecordatoriosView: View {
                         Label("Agregar recordatorio", systemImage: "plus")
                             .frame(maxWidth: .infinity)
                             .padding()
-                            .background(rojo)
+                            .background(Color.rojoSolido)
                             .foregroundStyle(.white)
                             .clipShape(RoundedRectangle(cornerRadius: 12))
                     }

@@ -156,13 +156,16 @@ extension Color {
     )
 
     static let iconoSuave = Color.adaptable(
-        claro: .tertiaryLabel,
-        oscuro: .tertiaryLabel,
+        claro: UIColor(white: 0.58, alpha: 1),
+        oscuro: UIColor(white: 0.56, alpha: 1),
         claroContraste: .secondaryLabel,
         oscuroContraste: .secondaryLabel
     )
 
-    static let rellenoSuave = Color(uiColor: .tertiarySystemFill)
+    static let rellenoSuave = Color.adaptable(
+        claro: .tertiarySystemFill,
+        oscuro: UIColor(white: 1, alpha: 0.13)
+    )
 }
 
 private struct ModificadorPreferencias: ViewModifier {
@@ -174,6 +177,7 @@ private struct ModificadorPreferencias: ViewModifier {
         content
             .font(.app(.body))
             .tracking(prefs.dislexia ? -1 : 0)
+            .background(Color.fondoApp.ignoresSafeArea())
             .preferredColorScheme(prefs.apariencia.esquema)
             .modifier(TamanoTexto(tamano: prefs.tamanoTexto))
             .environment(\.reducirMovimiento, reducir)
@@ -228,5 +232,79 @@ extension View {
         sensoryFeedback(tipo, trigger: trigger) { _, _ in
             Preferencias.compartidas.vibraciones
         }
+    }
+}
+
+enum TamanoIcono {
+    case flecha, navegacion, seleccion, mediano, grande, destacado
+
+    var puntos: CGFloat {
+        switch self {
+        case .flecha: 15
+        case .navegacion: 20
+        case .seleccion: 24
+        case .mediano: 26
+        case .grande: 30
+        case .destacado: 52
+        }
+    }
+
+    var caja: CGFloat {
+        switch self {
+        case .flecha: 20
+        case .navegacion: 44
+        case .seleccion: 30
+        case .mediano: 36
+        case .grande: 40
+        case .destacado: 64
+        }
+    }
+
+    var grosor: Font.Weight {
+        switch self {
+        case .flecha, .navegacion: .semibold
+        default: .regular
+        }
+    }
+}
+
+private struct ModificadorIcono: ViewModifier {
+    let tamano: TamanoIcono
+    @ScaledMetric(relativeTo: .body) private var factor: CGFloat = 1
+
+    func body(content: Content) -> some View {
+        let escala = min(factor, 1.6)
+        content
+            .font(.system(size: tamano.puntos * escala, weight: tamano.grosor))
+            .imageScale(.medium)
+            .frame(width: tamano.caja * escala, height: tamano.caja * escala)
+    }
+}
+
+extension View {
+    func icono(_ tamano: TamanoIcono) -> some View {
+        modifier(ModificadorIcono(tamano: tamano))
+    }
+}
+
+private struct IconoAjustado: View {
+    let imagen: Image
+    let tamano: TamanoIcono
+    @ScaledMetric(relativeTo: .body) private var factor: CGFloat = 1
+
+    var body: some View {
+        let escala = min(factor, 1.6)
+        imagen
+            .resizable()
+            .scaledToFit()
+            .fontWeight(tamano.grosor)
+            .frame(maxWidth: tamano.puntos * escala * 1.35, maxHeight: tamano.puntos * escala)
+            .frame(width: max(tamano.caja, tamano.puntos * 1.35) * escala, height: tamano.caja * escala)
+    }
+}
+
+extension Image {
+    func icono(_ tamano: TamanoIcono) -> some View {
+        IconoAjustado(imagen: self, tamano: tamano)
     }
 }

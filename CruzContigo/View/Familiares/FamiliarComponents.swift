@@ -6,14 +6,17 @@
 import SwiftUI
 
 extension Color {
-    static let tintaSuave = Color.brandRed.opacity(0.07)
+    static let tintaSuave = Color.adaptable(
+        claro: UIColor(red: 0.86, green: 0.11, blue: 0.14, alpha: 0.07),
+        oscuro: UIColor(red: 0.94, green: 0.48, blue: 0.48, alpha: 0.16)
+    )
 
     private static let paletaAvatar: [Color] = [
         .brandRed,
-        Color(red: 0.11, green: 0.40, blue: 0.70),
-        Color(red: 0.05, green: 0.47, blue: 0.40),
-        Color(red: 0.70, green: 0.36, blue: 0.04),
-        Color(red: 0.42, green: 0.27, blue: 0.66)
+        .adaptable(claro: UIColor(red: 0.11, green: 0.40, blue: 0.70, alpha: 1), oscuro: UIColor(red: 0.45, green: 0.66, blue: 0.95, alpha: 1)),
+        .adaptable(claro: UIColor(red: 0.05, green: 0.47, blue: 0.40, alpha: 1), oscuro: UIColor(red: 0.35, green: 0.78, blue: 0.66, alpha: 1)),
+        .adaptable(claro: UIColor(red: 0.70, green: 0.36, blue: 0.04, alpha: 1), oscuro: UIColor(red: 0.97, green: 0.65, blue: 0.33, alpha: 1)),
+        .adaptable(claro: UIColor(red: 0.42, green: 0.27, blue: 0.66, alpha: 1), oscuro: UIColor(red: 0.74, green: 0.62, blue: 0.96, alpha: 1))
     ]
 
     static func avatar(_ indice: Int) -> Color {
@@ -29,7 +32,7 @@ struct FamiliarAvatar: View {
         let color = Color.avatar(familiar.indiceColor)
         ZStack {
             Circle()
-                .fill(color.opacity(0.14))
+                .fill(color.opacity(0.16))
             Text(familiar.iniciales)
                 .font(.system(size: tamano * 0.36, weight: .bold, design: .rounded))
                 .foregroundColor(color)
@@ -53,7 +56,7 @@ struct InfoChip: View {
         .foregroundColor(.brandRed)
         .padding(.horizontal, 10)
         .padding(.vertical, 5)
-        .background(Capsule().fill(Color.brandRed.opacity(0.08)))
+        .background(Capsule().fill(Color.tintaSuave))
     }
 }
 
@@ -111,7 +114,7 @@ struct PersonaTile: View {
                 FamiliarAvatar(familiar: familiar, tamano: 48)
                 Spacer()
                 Image(systemName: seleccionada ? "checkmark.circle.fill" : "circle")
-                    .font(.app(.title3))
+                    .icono(.seleccion)
                     .foregroundColor(seleccionada ? .brandRed : Color.iconoSuave)
             }
             VStack(alignment: .leading, spacing: 2) {
@@ -129,7 +132,7 @@ struct PersonaTile: View {
         .frame(width: 156, alignment: .leading)
         .background(
             RoundedRectangle(cornerRadius: 20)
-                .fill(seleccionada ? Color.tintaSuave : Color(.systemBackground))
+                .fill(seleccionada ? Color.tintaSuave : Color.superficie)
         )
         .overlay(
             RoundedRectangle(cornerRadius: 20)
@@ -151,7 +154,7 @@ struct AgregarPersonaTile: View {
                     .fill(Color.clear)
                     .frame(width: 48, height: 48)
                 Image(systemName: "plus")
-                    .font(.app(.title3).weight(.bold))
+                    .icono(.grande)
                     .foregroundColor(.brandRed)
             }
             Text("Agregar")
@@ -196,7 +199,7 @@ struct FamiliarCard: View {
             if !tipo.isAccessibilitySize {
                 Spacer(minLength: 0)
                 Image(systemName: "chevron.right")
-                    .font(.app(.subheadline).weight(.semibold))
+                    .icono(.flecha)
                     .foregroundColor(Color.iconoSuave)
             }
         }
@@ -204,7 +207,7 @@ struct FamiliarCard: View {
         .padding(16)
         .background(
             RoundedRectangle(cornerRadius: 20)
-                .fill(Color(.systemBackground))
+                .fill(Color.superficie)
         )
         .overlay(
             RoundedRectangle(cornerRadius: 20)
@@ -239,7 +242,7 @@ struct AccesoRapidoTile: View {
         }
         .background(
             RoundedRectangle(cornerRadius: 18)
-                .fill(Color(.systemBackground))
+                .fill(Color.superficie)
         )
         .overlay(
             RoundedRectangle(cornerRadius: 18)
@@ -258,7 +261,7 @@ struct AccesoRapidoTile: View {
                 .fill(Color.clear)
                 .frame(width: 48, height: 48)
             Image(systemName: modulo.icono)
-                .font(.app(.title3))
+                .icono(.grande)
                 .foregroundColor(.brandRed)
         }
     }
@@ -274,6 +277,7 @@ struct ModuloFila: View {
                     .fill(Color.clear)
                     .frame(width: 44, height: 44)
                 Image(systemName: modulo.icono)
+                    .icono(.mediano)
                     .foregroundColor(.brandRed)
             }
             .accessibilityHidden(true)
@@ -295,7 +299,7 @@ struct ModuloFila: View {
                     .background(Capsule().fill(Color.rellenoSuave))
             }
             Image(systemName: "chevron.right")
-                .font(.app(.subheadline).weight(.semibold))
+                .icono(.flecha)
                 .foregroundColor(Color.iconoSuave)
         }
         .padding(14)
@@ -311,7 +315,7 @@ struct EmergenciaCard: View {
                     .fill(Color.clear)
                     .frame(width: 52, height: 52)
                 Image(systemName: "phone.fill")
-                    .font(.app(.title2))
+                    .icono(.grande)
                     .foregroundColor(.brandRed)
             }
             VStack(alignment: .leading, spacing: 2) {
@@ -324,17 +328,17 @@ struct EmergenciaCard: View {
             }
             Spacer(minLength: 0)
             Image(systemName: "chevron.right")
-                .font(.app(.subheadline).weight(.bold))
+                .icono(.flecha)
                 .foregroundColor(.brandRed)
         }
         .padding(16)
         .background(
             RoundedRectangle(cornerRadius: 20)
-                .fill(Color.brandRed.opacity(0.09))
+                .fill(Color.tintaSuave)
         )
         .overlay(
             RoundedRectangle(cornerRadius: 20)
-                .stroke(Color.brandRed.opacity(0.25), lineWidth: 1)
+                .stroke(Color.brandRed.opacity(0.35), lineWidth: 1)
         )
         .contentShape(RoundedRectangle(cornerRadius: 20))
         .accessibilityElement(children: .ignore)
@@ -400,7 +404,7 @@ extension View {
         self
             .background(
                 RoundedRectangle(cornerRadius: 14)
-                    .fill(Color(.systemBackground))
+                    .fill(Color.superficie)
             )
             .overlay(
                 RoundedRectangle(cornerRadius: 14)
@@ -412,7 +416,7 @@ extension View {
         safeAreaInset(edge: .top, spacing: 0) {
             Color.clear
                 .frame(height: 0)
-                .background(.bar, ignoresSafeAreaEdges: .top)
+                .background(Color.fondoApp, ignoresSafeAreaEdges: .top)
         }
     }
 
@@ -420,7 +424,7 @@ extension View {
         self
             .background(
                 RoundedRectangle(cornerRadius: radio)
-                    .fill(Color(.systemBackground))
+                    .fill(Color.superficie)
             )
             .overlay(
                 RoundedRectangle(cornerRadius: radio)
@@ -461,11 +465,11 @@ struct ChipSelector<Opcion: Identifiable & Hashable>: View {
                     .frame(maxWidth: .infinity, minHeight: 44)
                     .background(
                         RoundedRectangle(cornerRadius: 12)
-                            .fill(activo ? Color.brandRed : Color(.systemBackground))
+                            .fill(activo ? Color.rojoSolido : Color.superficie)
                     )
                     .overlay(
                         RoundedRectangle(cornerRadius: 12)
-                            .stroke(activo ? Color.brandRed : Color.borderGray, lineWidth: 1)
+                            .stroke(activo ? Color.rojoSolido : Color.borderGray, lineWidth: 1)
                     )
                 }
                 .buttonStyle(.plain)

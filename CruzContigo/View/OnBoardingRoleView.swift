@@ -164,13 +164,13 @@ struct RoleCard: View {
                 .padding(20)
 
                 Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
-                    .font(.app(.title3))
+                    .icono(.seleccion)
                     .foregroundColor(isSelected ? .brandRed : Color.iconoSuave)
                     .padding(14)
             }
             .background(
                 RoundedRectangle(cornerRadius: 20)
-                    .fill(isSelected ? Color.brandRed.opacity(0.05) : Color(.systemBackground))
+                    .fill(isSelected ? Color.tintaSuave : Color.superficie)
             )
             .overlay(
                 RoundedRectangle(cornerRadius: 20)
@@ -188,7 +188,7 @@ struct RoleCard: View {
                 .fill(Color.clear)
                 .frame(width: 56, height: 56)
             Image(systemName: icon)
-                .font(.system(size: 24))
+                .icono(.grande)
                 .foregroundColor(.brandRed)
         }
     }

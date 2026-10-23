@@ -148,8 +148,8 @@ struct FilaDato: View {
     var body: some View {
         HStack(alignment: .top, spacing: 14) {
             Image(systemName: icono)
+                .icono(.mediano)
                 .foregroundColor(.brandRed)
-                .frame(width: 24)
             VStack(alignment: .leading, spacing: 2) {
                 Text(titulo).font(.app(.caption)).foregroundColor(.textoSuave)
                 Text(valor).font(.app(.body))

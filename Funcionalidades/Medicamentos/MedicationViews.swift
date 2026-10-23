@@ -1,8 +1,8 @@
 import SwiftUI
 
 private enum MedicalStyle {
-    static let red = Color(red: 0.88, green: 0.02, blue: 0.12)
-    static let pale = Color(red: 1.0, green: 0.94, blue: 0.95)
+    static let red = Color.brandRed
+    static let pale = Color.tintaSuave
 }
 
 struct MedicationsView: View {
@@ -31,7 +31,7 @@ struct MedicationsView: View {
                 Spacer()
                 Button { showingAdd = true } label: {
                     Image(systemName: "plus")
-                        .font(.app(.title3))
+                        .icono(.navegacion)
                         .foregroundColor(.brandRed)
                         .frame(width: 44, height: 44)
                         .contentShape(Rectangle())
@@ -83,7 +83,7 @@ struct MedicationsView: View {
                                 } label: {
                                     HStack(spacing: 12) {
                                         Image(systemName: "pills.fill")
-                                            .font(.app(.title2))
+                                            .icono(.mediano)
                                             .foregroundStyle(MedicalStyle.red)
                                             .frame(width: 48, height: 48)
                                             .background(MedicalStyle.pale, in: RoundedRectangle(cornerRadius: 12))
@@ -94,7 +94,7 @@ struct MedicationsView: View {
                                                 .font(.app(.caption)).foregroundStyle(Color.textoSuave)
                                         }
                                         Spacer()
-                                        Image(systemName: "chevron.right").foregroundStyle(Color.textoSuave)
+                                        Image(systemName: "chevron.right").icono(.flecha).foregroundStyle(Color.textoSuave)
                                     }
                                     .padding(14)
                                     .background(.white, in: RoundedRectangle(cornerRadius: 16))
@@ -109,7 +109,7 @@ struct MedicationsView: View {
                 .padding()
             }
         }
-        .background(Color(.systemGroupedBackground))
+        .background(Color.fondoApp)
         .sheet(isPresented: $showingAdd) {
             NavigationStack {
                 MedicationFormView(recipient: recipient, model: model)
@@ -162,6 +162,8 @@ struct MedicationDetailView: View {
                         Button("Eliminar medicamento", role: .destructive) { showingDelete = true }
                     }
                 }
+                .scrollContentBackground(.hidden)
+                .background(Color.fondoApp)
                 .navigationTitle("Detalle")
                 .toolbar(.visible, for: .navigationBar)
                 .toolbar {

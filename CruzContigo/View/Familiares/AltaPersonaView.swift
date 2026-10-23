@@ -109,7 +109,7 @@ struct AltaPersonaView: View {
                     atras()
                 } label: {
                     Image(systemName: "chevron.left")
-                        .font(.app(.title3).weight(.semibold))
+                        .icono(.navegacion)
                         .foregroundColor(.brandRed)
                         .frame(width: 44, height: 44)
                         .contentShape(Rectangle())
@@ -128,7 +128,7 @@ struct AltaPersonaView: View {
                     salir()
                 } label: {
                     Image(systemName: "xmark")
-                        .font(.app(.headline))
+                        .icono(.navegacion)
                         .foregroundColor(.textoSuave)
                         .frame(width: 44, height: 44)
                         .background(Circle().fill(Color.rellenoSuave))
@@ -620,7 +620,7 @@ struct OpcionGrande: View {
                             .fill(Color.clear)
                             .frame(width: 48, height: 48)
                         Image(systemName: icono)
-                            .font(.app(.title3))
+                            .icono(.mediano)
                             .foregroundColor(seleccionada ? .white : .brandRed)
                     }
                     .accessibilityHidden(true)
@@ -638,7 +638,7 @@ struct OpcionGrande: View {
                 .fixedSize(horizontal: false, vertical: true)
                 Spacer(minLength: 0)
                 Image(systemName: seleccionada ? "checkmark.circle.fill" : "circle")
-                    .font(.app(.title2))
+                    .icono(.seleccion)
                     .foregroundColor(seleccionada ? .white : Color.iconoSuave)
                     .accessibilityHidden(true)
             }
@@ -648,11 +648,11 @@ struct OpcionGrande: View {
             .frame(maxWidth: .infinity, minHeight: compacta ? 60 : 76, alignment: .leading)
             .background(
                 RoundedRectangle(cornerRadius: 16)
-                    .fill(seleccionada ? Color.brandRed : Color(.systemBackground))
+                    .fill(seleccionada ? Color.rojoSolido : Color.superficie)
             )
             .overlay(
                 RoundedRectangle(cornerRadius: 16)
-                    .stroke(seleccionada ? Color.brandRed : Color.borderGray, lineWidth: 1)
+                    .stroke(seleccionada ? Color.rojoSolido : Color.borderGray, lineWidth: 1)
             )
             .contentShape(RoundedRectangle(cornerRadius: 16))
         }
@@ -736,7 +736,7 @@ struct AltaExitosaView: View {
                         .font(.app(.headline))
                         .foregroundColor(.white)
                         .frame(maxWidth: .infinity, minHeight: 56)
-                        .background(RoundedRectangle(cornerRadius: 16).fill(Color.brandRed))
+                        .background(RoundedRectangle(cornerRadius: 16).fill(Color.rojoSolido))
                 }
                 Button("Ir al inicio", action: terminar)
                     .font(.app(.headline))

@@ -17,6 +17,15 @@ enum ClavesApp {
 struct MainTabView: View {
     @State private var pestana: Pestana = .inicio
 
+    init() {
+        let apariencia = UITabBarAppearance()
+        apariencia.configureWithOpaqueBackground()
+        apariencia.backgroundColor = .systemBackground
+        apariencia.shadowColor = .separator
+        UITabBar.appearance().standardAppearance = apariencia
+        UITabBar.appearance().scrollEdgeAppearance = apariencia
+    }
+
     var body: some View {
         TabView(selection: $pestana) {
             Tab("Inicio", systemImage: "house.fill", value: .inicio) {
