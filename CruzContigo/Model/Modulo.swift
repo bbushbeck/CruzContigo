@@ -6,7 +6,7 @@
 import Foundation
 
 enum Modulo: String, CaseIterable, Identifiable, Hashable {
-    case fichaMedica, medicamentos, recordatorios, citas, emergencia, redCuidado, comunidad, bienestar, ayuda
+    case fichaMedica, medicamentos, recordatorios, citas, emergencia, redCuidado, comunidad, bienestar, ayuda, accesibilidad
 
     var id: String { rawValue }
 
@@ -21,6 +21,7 @@ enum Modulo: String, CaseIterable, Identifiable, Hashable {
         case .comunidad: "Avisos de Cruz Roja"
         case .bienestar: "Tu bienestar"
         case .ayuda: "Directorio y donaciones"
+        case .accesibilidad: "Accesibilidad"
         }
     }
 
@@ -35,6 +36,7 @@ enum Modulo: String, CaseIterable, Identifiable, Hashable {
         case .comunidad: "Campañas, cursos y comunicados"
         case .bienestar: "Cuida también de ti"
         case .ayuda: "Sedes, servicios y enlace oficial de donación"
+        case .accesibilidad: "Letra para dislexia, modo oscuro, tamaño y más"
         }
     }
 
@@ -49,12 +51,13 @@ enum Modulo: String, CaseIterable, Identifiable, Hashable {
         case .comunidad: "megaphone.fill"
         case .bienestar: "heart.circle.fill"
         case .ayuda: "mappin.and.ellipse"
+        case .accesibilidad: "accessibility"
         }
     }
 
     var sprint: Int {
         switch self {
-        case .redCuidado: 1
+        case .redCuidado, .accesibilidad: 1
         case .fichaMedica, .medicamentos, .recordatorios, .citas: 2
         case .emergencia, .comunidad, .bienestar, .ayuda: 3
         }
@@ -67,11 +70,11 @@ enum Modulo: String, CaseIterable, Identifiable, Hashable {
         }
     }
 
-    static let disponibles: Set<Modulo> = []
+    static let disponibles: Set<Modulo> = [.accesibilidad]
 
     var disponible: Bool { Self.disponibles.contains(self) }
 
     static let accesosRapidos: [Modulo] = [.fichaMedica, .medicamentos, .recordatorios]
     static let delPerfil: [Modulo] = [.fichaMedica, .medicamentos, .recordatorios, .citas, .emergencia]
-    static let generales: [Modulo] = [.redCuidado, .comunidad, .bienestar, .ayuda]
+    static let generales: [Modulo] = [.accesibilidad, .redCuidado, .comunidad, .bienestar, .ayuda]
 }

@@ -15,7 +15,7 @@ struct PersonasView: View {
                 VStack(alignment: .leading, spacing: 20) {
                     HStack(alignment: .firstTextBaseline) {
                         Text("Personas")
-                            .font(.largeTitle.weight(.bold))
+                            .font(.app(.largeTitle).weight(.bold))
                             .accessibilityAddTraits(.isHeader)
                         Spacer()
                         NavigationLink(value: Ruta.agregarFamiliar) {
@@ -29,8 +29,8 @@ struct PersonasView: View {
                         }
                     } else {
                         Text("\(store.familiares.count) persona\(store.familiares.count == 1 ? "" : "s") a tu cuidado")
-                            .font(.subheadline)
-                            .foregroundColor(.secondary)
+                            .font(.app(.subheadline))
+                            .foregroundColor(.textoSuave)
                         VStack(spacing: 12) {
                             ForEach(store.familiares) { familiar in
                                 NavigationLink(value: Ruta.familiar(familiar.id)) {
@@ -61,7 +61,7 @@ struct MasView: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: 20) {
                     Text("Más")
-                        .font(.largeTitle.weight(.bold))
+                        .font(.app(.largeTitle).weight(.bold))
                         .accessibilityAddTraits(.isHeader)
 
                     VStack(spacing: 0) {
@@ -76,10 +76,10 @@ struct MasView: View {
                     .tarjetaBorde()
 
                     HStack(spacing: 6) {
-                        Image(systemName: "lock.fill").font(.caption)
-                        Text("Tu información se mantiene protegida.").font(.footnote)
+                        Image(systemName: "lock.fill").font(.app(.caption))
+                        Text("Tu información se mantiene protegida.").font(.app(.footnote))
                     }
-                    .foregroundColor(.secondary)
+                    .foregroundColor(.textoSuave)
                     .frame(maxWidth: .infinity)
                 }
                 .padding(.horizontal, 20)

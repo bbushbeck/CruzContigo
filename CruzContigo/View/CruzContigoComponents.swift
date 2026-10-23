@@ -10,8 +10,18 @@ import SwiftUI
 // MARK: - Theme
 
 extension Color {
-    static let brandRed = Color(red: 0.78, green: 0.13, blue: 0.16)
-    static let borderGray = Color(white: 0.82)
+    static let brandRed = Color.adaptable(
+        claro: UIColor(red: 0.86, green: 0.11, blue: 0.14, alpha: 1),
+        oscuro: UIColor(red: 0.91, green: 0.21, blue: 0.24, alpha: 1),
+        claroContraste: UIColor(red: 0.62, green: 0.05, blue: 0.09, alpha: 1),
+        oscuroContraste: UIColor(red: 1.0, green: 0.45, blue: 0.47, alpha: 1)
+    )
+    static let borderGray = Color.adaptable(
+        claro: UIColor(white: 0.82, alpha: 1),
+        oscuro: UIColor(white: 0.30, alpha: 1),
+        claroContraste: UIColor(white: 0.45, alpha: 1),
+        oscuroContraste: UIColor(white: 0.70, alpha: 1)
+    )
 }
 
 // MARK: - Brand Logo
@@ -19,25 +29,23 @@ extension Color {
 struct BrandLogoView: View {
     var body: some View {
         VStack(spacing: 4) {
-            ZStack {
-                RoundedRectangle(cornerRadius: 20)
-                    .fill(Color.brandRed)
-                    .frame(width: 72, height: 72)
-                Image(systemName: "cross.case.fill")
-                    .font(.system(size: 36))
-                    .foregroundColor(.white)
-            }
-            .padding(.bottom, 8)
+            Image("LogoIcono")
+                .resizable()
+                .scaledToFit()
+                .frame(width: 88, height: 88)
+                .accessibilityIgnoresInvertColors()
+                .accessibilityHidden(true)
+                .padding(.bottom, 8)
 
-            Text("Cruz").font(.title).fontWeight(.bold)
+            Text("Cruz").font(.app(.title)).fontWeight(.bold)
             + Text("Contigo")
-                .font(.title).fontWeight(.bold)
+                .font(.app(.title)).fontWeight(.bold)
                 .foregroundColor(.brandRed)
 
             Text("Cuidar es estar juntos")
-                .font(.subheadline)
+                .font(.app(.subheadline))
                 .fontWeight(.semibold)
-                .foregroundColor(.secondary)
+                .foregroundColor(.textoSuave)
         }
     }
 }
@@ -50,7 +58,7 @@ struct BrandBackButton: View {
     var body: some View {
         Button(action: action) {
             Image(systemName: "chevron.left")
-                .font(.title3)
+                .font(.app(.title3))
                 .foregroundColor(.brandRed)
                 .frame(width: 44, height: 44)
                 .background(Color.brandRed.opacity(0.08))
@@ -68,7 +76,7 @@ struct PrimaryButton: View {
     var body: some View {
         Button(action: action) {
             Text(title)
-                .font(.headline)
+                .font(.app(.headline))
                 .foregroundColor(.white)
                 .frame(maxWidth: .infinity)
                 .frame(height: 56)
@@ -110,6 +118,12 @@ struct CodeInputView: View {
             }
             .contentShape(Rectangle())
             .onTapGesture { isFocused = true }
+            .accessibilityElement(children: .ignore)
+            .accessibilityLabel("Código de \(length) dígitos")
+            .accessibilityValue(code.isEmpty ? "vacío" : code.map(String.init).joined(separator: " "))
+            .accessibilityHint("Toca dos veces para escribir el código")
+            .accessibilityAddTraits(.isButton)
+            .accessibilityAction { isFocused = true }
         }
     }
 
@@ -130,7 +144,7 @@ struct CodeBoxView: View {
                 .frame(width: 48, height: 60)
                 .background(
                     RoundedRectangle(cornerRadius: 14)
-                        .fill(Color.white)
+                        .fill(Color(.systemBackground))
                 )
 
             if digit.isEmpty && isActive {
@@ -139,7 +153,7 @@ struct CodeBoxView: View {
                     .frame(width: 2, height: 28)
             } else {
                 Text(digit)
-                    .font(.title2)
+                    .font(.app(.title2))
                     .fontWeight(.semibold)
             }
         }

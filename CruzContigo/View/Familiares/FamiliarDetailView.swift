@@ -40,7 +40,7 @@ struct FamiliarDetailView: View {
             } else {
                 Spacer()
                 Text("Este perfil ya no existe.")
-                    .foregroundColor(.secondary)
+                    .foregroundColor(.textoSuave)
                 Spacer()
             }
         }
@@ -65,7 +65,7 @@ struct FamiliarDetailView: View {
         VStack(spacing: 12) {
             FamiliarAvatar(familiar: familiar, tamano: 96)
             Text(familiar.nombreCompleto)
-                .font(.title.weight(.bold))
+                .font(.app(.title).weight(.bold))
                 .multilineTextAlignment(.center)
             HStack(spacing: 8) {
                 InfoChip(texto: familiar.parentesco.titulo, icono: "heart.fill")
@@ -74,7 +74,7 @@ struct FamiliarDetailView: View {
             if let telefono = familiar.telefono, let url = URL(string: "tel://\(telefono)") {
                 Link(destination: url) {
                     Label("Llamar a \(familiar.nombre)", systemImage: "phone.fill")
-                        .font(.subheadline.weight(.bold))
+                        .font(.app(.subheadline).weight(.bold))
                         .foregroundColor(.brandRed)
                         .padding(.horizontal, 18)
                         .frame(minHeight: 44)
@@ -126,7 +126,7 @@ struct FamiliarDetailView: View {
             confirmarEliminar = true
         } label: {
             Label("Eliminar perfil", systemImage: "trash")
-                .font(.subheadline.weight(.bold))
+                .font(.app(.subheadline).weight(.bold))
                 .foregroundColor(.brandRed)
                 .frame(maxWidth: .infinity)
                 .frame(height: 48)
@@ -151,8 +151,8 @@ struct FilaDato: View {
                 .foregroundColor(.brandRed)
                 .frame(width: 24)
             VStack(alignment: .leading, spacing: 2) {
-                Text(titulo).font(.caption).foregroundColor(.secondary)
-                Text(valor).font(.body)
+                Text(titulo).font(.app(.caption)).foregroundColor(.textoSuave)
+                Text(valor).font(.app(.body))
             }
             Spacer(minLength: 0)
         }

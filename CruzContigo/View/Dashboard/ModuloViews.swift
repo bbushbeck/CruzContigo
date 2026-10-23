@@ -36,22 +36,22 @@ struct ModuloPendienteView: View {
                         .fill(Color.tintaSuave)
                         .frame(width: 96, height: 96)
                     Image(systemName: modulo.icono)
-                        .font(.largeTitle)
+                        .font(.app(.largeTitle))
                         .foregroundColor(.brandRed)
                 }
                 .accessibilityHidden(true)
                 Text(modulo.titulo)
-                    .font(.title.weight(.bold))
+                    .font(.app(.title).weight(.bold))
                     .multilineTextAlignment(.center)
                     .accessibilityAddTraits(.isHeader)
                 if let familiar {
                     Text("de \(familiar.nombreCompleto)")
-                        .font(.headline)
-                        .foregroundColor(.secondary)
+                        .font(.app(.headline))
+                        .foregroundColor(.textoSuave)
                 }
                 Text(modulo.subtitulo)
-                    .font(.body)
-                    .foregroundColor(.secondary)
+                    .font(.app(.body))
+                    .foregroundColor(.textoSuave)
                     .multilineTextAlignment(.center)
                 InfoChip(texto: "Próximamente · Sprint \(modulo.sprint)", icono: "hammer.fill")
             }
@@ -82,13 +82,13 @@ struct ElegirFamiliarView: View {
                 VStack(alignment: .leading, spacing: 20) {
                     VStack(alignment: .leading, spacing: 8) {
                         Text(modulo.titulo.uppercased())
-                            .font(.caption)
+                            .font(.app(.caption))
                             .fontWeight(.bold)
                             .foregroundColor(.brandRed)
                         Text("¿De quién?")
-                            .font(.largeTitle.weight(.bold))
+                            .font(.app(.largeTitle).weight(.bold))
                         Text("Elige a la persona cuya información quieres consultar.")
-                            .foregroundColor(.secondary)
+                            .foregroundColor(.textoSuave)
                     }
 
                     VStack(spacing: 12) {

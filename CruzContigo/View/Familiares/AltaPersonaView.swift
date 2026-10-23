@@ -11,7 +11,7 @@ struct AltaPersonaView: View {
 
     @Environment(FamiliaresStore.self) private var store
     @Environment(\.dismiss) private var dismiss
-    @Environment(\.accessibilityReduceMotion) private var reducirMovimiento
+    @Environment(\.reducirMovimiento) private var reducirMovimiento
     @AppStorage(ClavesApp.personaSeleccionada) private var seleccionID = ""
 
     @State private var draft = FamiliarDraft()
@@ -45,8 +45,8 @@ struct AltaPersonaView: View {
             }
         }
         .animation(reducirMovimiento ? nil : .easeInOut(duration: 0.25), value: creado != nil)
-        .sensoryFeedback(.error, trigger: intentosFallidos)
-        .sensoryFeedback(.success, trigger: creado != nil)
+        .vibracion(.error, trigger: intentosFallidos)
+        .vibracion(.success, trigger: creado != nil)
         .confirmationDialog("¿Salir sin guardar?", isPresented: $confirmarSalida, titleVisibility: .visible) {
             Button("Salir sin guardar", role: .destructive) { dismiss() }
             Button("Seguir editando", role: .cancel) {}
@@ -109,7 +109,7 @@ struct AltaPersonaView: View {
                     atras()
                 } label: {
                     Image(systemName: "chevron.left")
-                        .font(.title3.weight(.semibold))
+                        .font(.app(.title3).weight(.semibold))
                         .foregroundColor(.brandRed)
                         .frame(width: 44, height: 44)
                         .background(Color.tintaSuave)
@@ -120,8 +120,8 @@ struct AltaPersonaView: View {
                 Spacer()
 
                 Text(paso == .revision ? "Revisión final" : "Paso \(paso.rawValue + 1) de \(Paso.preguntas.count)")
-                    .font(.subheadline.weight(.semibold))
-                    .foregroundColor(.secondary)
+                    .font(.app(.subheadline).weight(.semibold))
+                    .foregroundColor(.textoSuave)
 
                 Spacer()
 
@@ -129,10 +129,10 @@ struct AltaPersonaView: View {
                     salir()
                 } label: {
                     Image(systemName: "xmark")
-                        .font(.headline)
-                        .foregroundColor(.secondary)
+                        .font(.app(.headline))
+                        .foregroundColor(.textoSuave)
                         .frame(width: 44, height: 44)
-                        .background(Circle().fill(Color(white: 0.94)))
+                        .background(Circle().fill(Color.rellenoSuave))
                 }
                 .accessibilityLabel("Cancelar y salir")
             }
@@ -158,13 +158,13 @@ struct AltaPersonaView: View {
     private func pregunta(_ titulo: String, ayuda: String) -> some View {
         VStack(alignment: .leading, spacing: 8) {
             Text(titulo)
-                .font(.title.weight(.bold))
+                .font(.app(.title).weight(.bold))
                 .fixedSize(horizontal: false, vertical: true)
                 .accessibilityAddTraits(.isHeader)
                 .accessibilityFocused($tituloEnfocado)
             Text(ayuda)
-                .font(.body)
-                .foregroundColor(.secondary)
+                .font(.app(.body))
+                .foregroundColor(.textoSuave)
                 .fixedSize(horizontal: false, vertical: true)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -184,7 +184,7 @@ struct AltaPersonaView: View {
                 }
             } label: {
                 Label("Elegir de mis contactos", systemImage: "person.crop.circle.badge.plus")
-                    .font(.headline)
+                    .font(.app(.headline))
                     .foregroundColor(.brandRed)
                     .frame(maxWidth: .infinity, minHeight: 52)
                     .background(RoundedRectangle(cornerRadius: 14).fill(Color.tintaSuave))
@@ -235,7 +235,7 @@ struct AltaPersonaView: View {
                     }
                 }
             }
-            .sensoryFeedback(.selection, trigger: draft.parentesco)
+            .vibracion(.selection, trigger: draft.parentesco)
         }
     }
 
@@ -260,7 +260,7 @@ struct AltaPersonaView: View {
 
             if let edad = draft.edad {
                 Label("Tiene \(edad) \(edad == 1 ? "año" : "años")", systemImage: "birthday.cake")
-                    .font(.headline)
+                    .font(.app(.headline))
                     .foregroundColor(.brandRed)
                     .padding(.horizontal, 14)
                     .padding(.vertical, 10)
@@ -278,7 +278,7 @@ struct AltaPersonaView: View {
     private var selectorMes: some View {
         VStack(alignment: .leading, spacing: 8) {
             Text("Mes")
-                .font(.headline)
+                .font(.app(.headline))
             Menu {
                 Picker("Mes", selection: $draft.mes) {
                     ForEach(1...12, id: \.self) { m in
@@ -288,15 +288,15 @@ struct AltaPersonaView: View {
             } label: {
                 HStack {
                     Text(draft.mes.map { FamiliarDraft.meses[$0 - 1].capitalized } ?? "Elegir")
-                        .foregroundColor(draft.mes == nil ? Color(white: 0.55) : .primary)
+                        .foregroundColor(draft.mes == nil ? Color(.placeholderText) : .primary)
                         .lineLimit(1)
                         .minimumScaleFactor(0.7)
                     Spacer(minLength: 4)
                     Image(systemName: "chevron.up.chevron.down")
-                        .font(.footnote)
-                        .foregroundColor(.secondary)
+                        .font(.app(.footnote))
+                        .foregroundColor(.textoSuave)
                 }
-                .font(.title3)
+                .font(.app(.title3))
                 .padding(.horizontal, 12)
                 .frame(maxWidth: .infinity, minHeight: 56)
                 .fieldBorder(errores[.mes] != nil)
@@ -327,7 +327,7 @@ struct AltaPersonaView: View {
                     }
                 }
             }
-            .sensoryFeedback(.selection, trigger: draft.tipoCuidado)
+            .vibracion(.selection, trigger: draft.tipoCuidado)
         }
     }
 
@@ -351,9 +351,9 @@ struct AltaPersonaView: View {
 
             VStack(alignment: .leading, spacing: 8) {
                 Text("¿Algo que debamos saber? (opcional)")
-                    .font(.headline)
+                    .font(.app(.headline))
                 TextField("Ej. Usa bastón, prefiere que le digan Rosy", text: $draft.notas, axis: .vertical)
-                    .font(.title3)
+                    .font(.app(.title3))
                     .lineLimit(3...6)
                     .padding(16)
                     .fieldBorder(false)
@@ -388,11 +388,11 @@ struct AltaPersonaView: View {
             .tarjetaBorde()
 
             HStack(spacing: 8) {
-                Image(systemName: "lock.fill").font(.caption)
+                Image(systemName: "lock.fill").font(.app(.caption))
                 Text("Solo tú y las personas que invites podrán ver estos datos.")
-                    .font(.footnote)
+                    .font(.app(.footnote))
             }
-            .foregroundColor(.secondary)
+            .foregroundColor(.textoSuave)
         }
     }
 
@@ -414,7 +414,7 @@ struct AltaPersonaView: View {
                 Button("Omitir por ahora") {
                     continuar()
                 }
-                .font(.headline)
+                .font(.app(.headline))
                 .foregroundColor(.brandRed)
                 .frame(minHeight: 44)
             }
@@ -541,9 +541,9 @@ private struct CampoTexto: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             Text(titulo)
-                .font(.headline)
+                .font(.app(.headline))
             TextField("Ej. \(ejemplo)", text: $texto)
-                .font(.title3)
+                .font(.app(.title3))
                 .textContentType(contenido)
                 .keyboardType(teclado)
                 .autocorrectionDisabled()
@@ -573,9 +573,9 @@ private struct CampoNumero: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             Text(titulo)
-                .font(.headline)
+                .font(.app(.headline))
             TextField(ejemplo, text: $texto)
-                .font(.title3.monospacedDigit())
+                .font(.app(.title3).monospacedDigit())
                 .keyboardType(.numberPad)
                 .multilineTextAlignment(.center)
                 .focused(foco, equals: campo)
@@ -596,7 +596,7 @@ struct MensajeError: View {
     var body: some View {
         if let texto {
             Label(texto, systemImage: "exclamationmark.circle.fill")
-                .font(.subheadline.weight(.semibold))
+                .font(.app(.subheadline).weight(.semibold))
                 .foregroundColor(.brandRed)
                 .fixedSize(horizontal: false, vertical: true)
                 .transition(.opacity)
@@ -621,17 +621,17 @@ struct OpcionGrande: View {
                             .fill(seleccionada ? Color.white.opacity(0.25) : Color.tintaSuave)
                             .frame(width: 48, height: 48)
                         Image(systemName: icono)
-                            .font(.title3)
+                            .font(.app(.title3))
                             .foregroundColor(seleccionada ? .white : .brandRed)
                     }
                     .accessibilityHidden(true)
                 }
                 VStack(alignment: .leading, spacing: 4) {
                     Text(titulo)
-                        .font(.headline)
+                        .font(.app(.headline))
                     if let descripcion {
                         Text(descripcion)
-                            .font(.subheadline)
+                            .font(.app(.subheadline))
                             .opacity(0.85)
                     }
                 }
@@ -639,8 +639,8 @@ struct OpcionGrande: View {
                 .fixedSize(horizontal: false, vertical: true)
                 Spacer(minLength: 0)
                 Image(systemName: seleccionada ? "checkmark.circle.fill" : "circle")
-                    .font(.title2)
-                    .foregroundColor(seleccionada ? .white : Color(white: 0.75))
+                    .font(.app(.title2))
+                    .foregroundColor(seleccionada ? .white : Color.iconoSuave)
                     .accessibilityHidden(true)
             }
             .foregroundColor(seleccionada ? .white : .primary)
@@ -672,15 +672,15 @@ private struct FilaRevision: View {
         HStack(alignment: .top, spacing: 12) {
             VStack(alignment: .leading, spacing: 4) {
                 Text(titulo)
-                    .font(.subheadline)
-                    .foregroundColor(.secondary)
+                    .font(.app(.subheadline))
+                    .foregroundColor(.textoSuave)
                 Text(valor)
-                    .font(.body.weight(.semibold))
+                    .font(.app(.body).weight(.semibold))
                     .fixedSize(horizontal: false, vertical: true)
             }
             Spacer(minLength: 8)
             Button("Cambiar", action: cambiar)
-                .font(.subheadline.weight(.bold))
+                .font(.app(.subheadline).weight(.bold))
                 .foregroundColor(.brandRed)
                 .frame(minWidth: 44, minHeight: 44)
                 .accessibilityLabel("Cambiar \(titulo.lowercased())")
@@ -695,7 +695,7 @@ struct AltaExitosaView: View {
     let persona: Familiar
     let terminar: () -> Void
 
-    @Environment(\.accessibilityReduceMotion) private var reducirMovimiento
+    @Environment(\.reducirMovimiento) private var reducirMovimiento
     @State private var aparecer = false
 
     var body: some View {
@@ -708,6 +708,7 @@ struct AltaExitosaView: View {
                     .frame(width: 140, height: 140)
                     .scaleEffect(aparecer || reducirMovimiento ? 1 : 0.6)
                 FamiliarAvatar(familiar: persona, tamano: 96)
+                    .accessibilityIgnoresInvertColors()
                 Image(systemName: "checkmark.circle.fill")
                     .font(.system(size: 40))
                     .foregroundStyle(.white, Color.green)
@@ -718,12 +719,12 @@ struct AltaExitosaView: View {
 
             VStack(spacing: 10) {
                 Text("¡\(persona.nombre) ya está en CruzContigo!")
-                    .font(.title.weight(.bold))
+                    .font(.app(.title).weight(.bold))
                     .multilineTextAlignment(.center)
                     .accessibilityAddTraits(.isHeader)
                 Text("Ahora completa su información médica para tenerla a la mano en una emergencia.")
-                    .font(.body)
-                    .foregroundColor(.secondary)
+                    .font(.app(.body))
+                    .foregroundColor(.textoSuave)
                     .multilineTextAlignment(.center)
             }
             .padding(.horizontal, 12)
@@ -733,13 +734,13 @@ struct AltaExitosaView: View {
             VStack(spacing: 12) {
                 NavigationLink(value: Ruta.modulo(.fichaMedica, familiarID: persona.id)) {
                     Text("Completar información médica")
-                        .font(.headline)
+                        .font(.app(.headline))
                         .foregroundColor(.white)
                         .frame(maxWidth: .infinity, minHeight: 56)
                         .background(RoundedRectangle(cornerRadius: 16).fill(Color.brandRed))
                 }
                 Button("Ir al inicio", action: terminar)
-                    .font(.headline)
+                    .font(.app(.headline))
                     .foregroundColor(.brandRed)
                     .frame(maxWidth: .infinity, minHeight: 48)
             }

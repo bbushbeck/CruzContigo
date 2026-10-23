@@ -39,6 +39,8 @@ struct ModuloDestino: View {
 
     var body: some View {
         switch modulo {
+        case .accesibilidad:
+            AccesibilidadView()
         default:
             ModuloPendienteView(modulo: modulo, familiarID: familiarID)
         }

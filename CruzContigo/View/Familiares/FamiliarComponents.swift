@@ -48,7 +48,7 @@ struct InfoChip: View {
             if let icono { Image(systemName: icono) }
             Text(texto)
         }
-        .font(.caption)
+        .font(.app(.caption))
         .fontWeight(.semibold)
         .foregroundColor(.brandRed)
         .padding(.horizontal, 10)
@@ -69,7 +69,7 @@ struct SeccionHeader<Accion: View>: View {
             : AnyLayout(HStackLayout(alignment: .firstTextBaseline))
         layout {
             Text(titulo)
-                .font(.title3)
+                .font(.app(.title3))
                 .fontWeight(.bold)
                 .accessibilityAddTraits(.isHeader)
             if !tipo.isAccessibilitySize { Spacer() }
@@ -94,7 +94,7 @@ struct EnlaceTexto: View {
             if let icono { Image(systemName: icono) }
             Text(titulo)
         }
-        .font(.subheadline.weight(.bold))
+        .font(.app(.subheadline).weight(.bold))
         .foregroundColor(.brandRed)
         .frame(minHeight: 44)
         .contentShape(Rectangle())
@@ -111,17 +111,17 @@ struct PersonaTile: View {
                 FamiliarAvatar(familiar: familiar, tamano: 48)
                 Spacer()
                 Image(systemName: seleccionada ? "checkmark.circle.fill" : "circle")
-                    .font(.title3)
-                    .foregroundColor(seleccionada ? .brandRed : Color(white: 0.78))
+                    .font(.app(.title3))
+                    .foregroundColor(seleccionada ? .brandRed : Color.iconoSuave)
             }
             VStack(alignment: .leading, spacing: 2) {
                 Text(familiar.nombre)
-                    .font(.headline)
+                    .font(.app(.headline))
                     .foregroundColor(.primary)
                     .lineLimit(1)
                 Text("\(familiar.edad) años · \(familiar.parentesco.titulo)")
-                    .font(.footnote)
-                    .foregroundColor(.secondary)
+                    .font(.app(.footnote))
+                    .foregroundColor(.textoSuave)
                     .lineLimit(1)
             }
         }
@@ -151,11 +151,11 @@ struct AgregarPersonaTile: View {
                     .fill(Color.tintaSuave)
                     .frame(width: 48, height: 48)
                 Image(systemName: "plus")
-                    .font(.title3.weight(.bold))
+                    .font(.app(.title3).weight(.bold))
                     .foregroundColor(.brandRed)
             }
             Text("Agregar")
-                .font(.subheadline.weight(.bold))
+                .font(.app(.subheadline).weight(.bold))
                 .foregroundColor(.brandRed)
         }
         .frame(width: 104)
@@ -185,19 +185,19 @@ struct FamiliarCard: View {
 
             VStack(alignment: .leading, spacing: 6) {
                 Text(familiar.nombreCompleto)
-                    .font(.headline)
+                    .font(.app(.headline))
                     .foregroundColor(.primary)
                 Text("\(familiar.parentesco.titulo) · \(familiar.edad) años")
-                    .font(.subheadline)
-                    .foregroundColor(.secondary)
+                    .font(.app(.subheadline))
+                    .foregroundColor(.textoSuave)
                 InfoChip(texto: familiar.tipoCuidado.titulo, icono: familiar.tipoCuidado.icono)
             }
 
             if !tipo.isAccessibilitySize {
                 Spacer(minLength: 0)
                 Image(systemName: "chevron.right")
-                    .font(.subheadline.weight(.semibold))
-                    .foregroundColor(Color(white: 0.6))
+                    .font(.app(.subheadline).weight(.semibold))
+                    .foregroundColor(Color.iconoSuave)
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -225,7 +225,7 @@ struct AccesoRapidoTile: View {
                 VStack(spacing: 10) {
                     icono
                     Text(modulo.titulo)
-                        .font(.footnote.weight(.semibold))
+                        .font(.app(.footnote).weight(.semibold))
                         .foregroundColor(.primary)
                         .multilineTextAlignment(.center)
                         .lineLimit(2, reservesSpace: true)
@@ -237,14 +237,6 @@ struct AccesoRapidoTile: View {
                 ModuloFila(modulo: modulo)
             }
         }
-        .background(
-            RoundedRectangle(cornerRadius: 18)
-                .fill(Color(.systemBackground))
-        )
-        .overlay(
-            RoundedRectangle(cornerRadius: 18)
-                .stroke(Color.borderGray, lineWidth: 1.5)
-        )
         .contentShape(RoundedRectangle(cornerRadius: 18))
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(modulo.titulo)
@@ -258,7 +250,7 @@ struct AccesoRapidoTile: View {
                 .fill(Color.tintaSuave)
                 .frame(width: 48, height: 48)
             Image(systemName: modulo.icono)
-                .font(.title3)
+                .font(.app(.title3))
                 .foregroundColor(.brandRed)
         }
     }
@@ -279,24 +271,24 @@ struct ModuloFila: View {
             .accessibilityHidden(true)
             VStack(alignment: .leading, spacing: 2) {
                 Text(modulo.titulo)
-                    .font(.headline)
+                    .font(.app(.headline))
                     .foregroundColor(.primary)
                 Text(modulo.subtitulo)
-                    .font(.caption)
-                    .foregroundColor(.secondary)
+                    .font(.app(.caption))
+                    .foregroundColor(.textoSuave)
             }
             Spacer(minLength: 0)
             if !modulo.disponible {
                 Text("Pronto")
-                    .font(.caption2.weight(.bold))
-                    .foregroundColor(.secondary)
+                    .font(.app(.caption2).weight(.bold))
+                    .foregroundColor(.textoSuave)
                     .padding(.horizontal, 8)
                     .padding(.vertical, 3)
-                    .background(Capsule().fill(Color(white: 0.93)))
+                    .background(Capsule().fill(Color.rellenoSuave))
             }
             Image(systemName: "chevron.right")
-                .font(.subheadline.weight(.semibold))
-                .foregroundColor(Color(white: 0.6))
+                .font(.app(.subheadline).weight(.semibold))
+                .foregroundColor(Color.iconoSuave)
         }
         .padding(14)
         .contentShape(Rectangle())
@@ -311,20 +303,20 @@ struct EmergenciaCard: View {
                     .fill(Color.brandRed)
                     .frame(width: 52, height: 52)
                 Image(systemName: "phone.fill")
-                    .font(.title3)
+                    .font(.app(.title3))
                     .foregroundColor(.white)
             }
             VStack(alignment: .leading, spacing: 2) {
                 Text("Emergencia")
-                    .font(.headline)
+                    .font(.app(.headline))
                     .foregroundColor(.brandRed)
                 Text("Ver contactos y opciones de ayuda")
-                    .font(.subheadline)
-                    .foregroundColor(.secondary)
+                    .font(.app(.subheadline))
+                    .foregroundColor(.textoSuave)
             }
             Spacer(minLength: 0)
             Image(systemName: "chevron.right")
-                .font(.subheadline.weight(.bold))
+                .font(.app(.subheadline).weight(.bold))
                 .foregroundColor(.brandRed)
         }
         .padding(16)
@@ -360,14 +352,14 @@ struct FormFieldContainer<Content: View>: View {
                         .accessibilityLabel("obligatorio")
                 }
             }
-            .font(.subheadline)
+            .font(.app(.subheadline))
             .fontWeight(.semibold)
 
             content
 
             if let error {
                 Label(error, systemImage: "exclamationmark.circle.fill")
-                    .font(.caption)
+                    .font(.app(.caption))
                     .foregroundColor(.brandRed)
                     .transition(.opacity)
             }
@@ -455,7 +447,7 @@ struct ChipSelector<Opcion: Identifiable & Hashable>: View {
                             .minimumScaleFactor(0.85)
                             .multilineTextAlignment(.center)
                     }
-                    .font(.subheadline.weight(.semibold))
+                    .font(.app(.subheadline).weight(.semibold))
                     .foregroundColor(activo ? .white : .primary)
                     .padding(.horizontal, 8)
                     .frame(maxWidth: .infinity, minHeight: 44)
@@ -472,6 +464,6 @@ struct ChipSelector<Opcion: Identifiable & Hashable>: View {
                 .accessibilityAddTraits(activo ? .isSelected : [])
             }
         }
-        .sensoryFeedback(.selection, trigger: seleccion)
+        .vibracion(.selection, trigger: seleccion)
     }
 }

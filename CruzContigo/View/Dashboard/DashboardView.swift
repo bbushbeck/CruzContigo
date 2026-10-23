@@ -14,6 +14,7 @@ struct DashboardView: View {
     @AppStorage(ClavesApp.primerosPasosOcultos) private var primerosPasosOcultos = false
     @State private var ruta: [Ruta] = []
     @State private var mostrarEmergencia = false
+    @Environment(\.openURL) private var abrirURL
 
     private var seleccionada: Familiar? {
         store.familiares.first { $0.id.uuidString == seleccionID } ?? store.familiares.first
@@ -67,24 +68,21 @@ struct DashboardView: View {
 
     private var encabezado: some View {
         HStack(spacing: 10) {
-            ZStack {
-                RoundedRectangle(cornerRadius: 10)
-                    .fill(Color.brandRed)
-                    .frame(width: 40, height: 40)
-                Image(systemName: "cross.case.fill")
-                    .font(.system(size: 20))
-                    .foregroundColor(.white)
-            }
-            .accessibilityHidden(true)
+            Image("LogoIcono")
+                .resizable()
+                .scaledToFit()
+                .frame(width: 44, height: 44)
+                .accessibilityIgnoresInvertColors()
+                .accessibilityHidden(true)
             VStack(alignment: .leading, spacing: 0) {
                 Text("Cruz\(Text("Contigo").foregroundColor(.brandRed))")
-                    .font(.title3.weight(.bold))
+                    .font(.app(.title3).weight(.bold))
                     .lineLimit(1)
                     .minimumScaleFactor(0.5)
                 if !tipo.isAccessibilitySize {
                     Text("Cuidar es estar juntos")
-                        .font(.caption2)
-                        .foregroundColor(.secondary)
+                        .font(.app(.caption2))
+                        .foregroundColor(.textoSuave)
                 }
             }
             .accessibilityElement(children: .combine)
@@ -94,10 +92,10 @@ struct DashboardView: View {
                 pestana = .mas
             } label: {
                 Image(systemName: "person.crop.circle")
-                    .font(.title2)
-                    .foregroundColor(.secondary)
+                    .font(.app(.title2))
+                    .foregroundColor(.textoSuave)
                     .frame(width: 44, height: 44)
-                    .background(Circle().fill(Color(white: 0.95)))
+                    .background(Circle().fill(Color.rellenoSuave))
             }
             .accessibilityLabel("Tu perfil y más opciones")
         }
@@ -107,11 +105,11 @@ struct DashboardView: View {
     private var saludo: some View {
         VStack(alignment: .leading, spacing: 6) {
             Text(textoSaludo)
-                .font(.largeTitle.weight(.bold))
+                .font(.app(.largeTitle).weight(.bold))
                 .accessibilityAddTraits(.isHeader)
             Text(subtitulo)
-                .font(.body)
-                .foregroundColor(.secondary)
+                .font(.app(.body))
+                .foregroundColor(.textoSuave)
         }
     }
 
@@ -179,6 +177,14 @@ struct DashboardView: View {
                     }
                     .buttonStyle(.plain)
                     .contextMenu { menuPersona(familiar) }
+                    .accessibilityAction(named: "Ver perfil de \(familiar.nombre)") {
+                        ruta.append(.familiar(familiar.id))
+                    }
+                    .accessibilityActions {
+                        if let telefono = familiar.telefono, let url = URL(string: "tel://\(telefono)") {
+                            Button("Llamar a \(familiar.nombre)") { abrirURL(url) }
+                        }
+                    }
                 }
                 NavigationLink(value: Ruta.agregarFamiliar) {
                     AgregarPersonaTile()
@@ -190,7 +196,7 @@ struct DashboardView: View {
             .padding(.horizontal, 20)
         }
         .padding(.horizontal, -20)
-        .sensoryFeedback(.selection, trigger: seleccionID)
+        .vibracion(.selection, trigger: seleccionID)
     }
 
     private var listaVertical: some View {
@@ -265,15 +271,15 @@ struct DashboardView: View {
             }
             HStack(spacing: 14) {
                 Image(systemName: "bell.badge")
-                    .font(.title2)
-                    .foregroundColor(.secondary)
+                    .font(.app(.title2))
+                    .foregroundColor(.textoSuave)
                     .frame(width: 44)
                 VStack(alignment: .leading, spacing: 2) {
                     Text("Nada pendiente por ahora")
-                        .font(.subheadline.weight(.semibold))
+                        .font(.app(.subheadline).weight(.semibold))
                     Text("Cuando registres medicamentos o citas, sus avisos aparecerán aquí.")
-                        .font(.footnote)
-                        .foregroundColor(.secondary)
+                        .font(.app(.footnote))
+                        .foregroundColor(.textoSuave)
                 }
                 Spacer(minLength: 0)
             }
@@ -309,21 +315,21 @@ struct EstadoVacioFamiliares: View {
                     .fill(Color.tintaSuave)
                     .frame(width: 88, height: 88)
                 Image(systemName: "person.2.badge.plus")
-                    .font(.largeTitle)
+                    .font(.app(.largeTitle))
                     .foregroundColor(.brandRed)
             }
             .accessibilityHidden(true)
             Text("Aún no agregas a nadie")
-                .font(.headline)
+                .font(.app(.headline))
             Text("Registra a la persona que cuidas para tener su información médica, medicamentos y citas en un solo lugar.")
-                .font(.subheadline)
-                .foregroundColor(.secondary)
+                .font(.app(.subheadline))
+                .foregroundColor(.textoSuave)
                 .multilineTextAlignment(.center)
             PrimaryButton(title: "Agregar persona", action: agregar)
                 .padding(.top, 6)
             Text("Toma menos de un minuto.")
-                .font(.footnote)
-                .foregroundColor(.secondary)
+                .font(.app(.footnote))
+                .foregroundColor(.textoSuave)
         }
         .padding(20)
         .frame(maxWidth: .infinity)
@@ -360,16 +366,16 @@ struct PrimerosPasosView: View {
             HStack(alignment: .firstTextBaseline) {
                 VStack(alignment: .leading, spacing: 2) {
                     Text("Primeros pasos")
-                        .font(.headline)
+                        .font(.app(.headline))
                         .accessibilityAddTraits(.isHeader)
                     Text("\(hechos) de \(pasos.count) completados")
-                        .font(.footnote)
-                        .foregroundColor(.secondary)
+                        .font(.app(.footnote))
+                        .foregroundColor(.textoSuave)
                 }
                 Spacer()
                 Button("Ocultar", action: ocultar)
-                    .font(.footnote.weight(.semibold))
-                    .foregroundColor(.secondary)
+                    .font(.app(.footnote).weight(.semibold))
+                    .foregroundColor(.textoSuave)
                     .frame(minHeight: 44)
             }
             ProgressBarView(progress: Double(hechos) / Double(pasos.count))
@@ -381,18 +387,18 @@ struct PrimerosPasosView: View {
                     } label: {
                         HStack(spacing: 12) {
                             Image(systemName: paso.hecho ? "checkmark.circle.fill" : "\(paso.id).circle")
-                                .font(.title3)
+                                .font(.app(.title3))
                                 .foregroundColor(paso.hecho ? .green : .brandRed)
                             Text(paso.titulo)
-                                .font(.subheadline.weight(.semibold))
+                                .font(.app(.subheadline).weight(.semibold))
                                 .foregroundColor(paso.hecho ? .secondary : .primary)
                                 .strikethrough(paso.hecho)
                                 .multilineTextAlignment(.leading)
                             Spacer(minLength: 0)
                             if !paso.hecho {
                                 Image(systemName: "chevron.right")
-                                    .font(.footnote.weight(.semibold))
-                                    .foregroundColor(Color(white: 0.6))
+                                    .font(.app(.footnote).weight(.semibold))
+                                    .foregroundColor(Color.iconoSuave)
                             }
                         }
                         .frame(minHeight: 48)
@@ -419,17 +425,17 @@ struct EstadoErrorView: View {
     var body: some View {
         VStack(spacing: 10) {
             Image(systemName: "wifi.exclamationmark")
-                .font(.largeTitle)
+                .font(.app(.largeTitle))
                 .foregroundColor(.brandRed)
                 .accessibilityHidden(true)
             Text("No pudimos cargar la información")
-                .font(.headline)
+                .font(.app(.headline))
             Text(mensaje)
-                .font(.subheadline)
-                .foregroundColor(.secondary)
+                .font(.app(.subheadline))
+                .foregroundColor(.textoSuave)
                 .multilineTextAlignment(.center)
             Button("Reintentar", action: reintentar)
-                .font(.subheadline.weight(.bold))
+                .font(.app(.subheadline).weight(.bold))
                 .foregroundColor(.brandRed)
                 .frame(minHeight: 44)
         }

@@ -28,21 +28,21 @@ struct EmergenciaSheet: View {
                         dismiss()
                     } label: {
                         Image(systemName: "xmark")
-                            .font(.headline)
-                            .foregroundColor(.secondary)
+                            .font(.app(.headline))
+                            .foregroundColor(.textoSuave)
                             .frame(width: 44, height: 44)
-                            .background(Circle().fill(Color(white: 0.94)))
+                            .background(Circle().fill(Color.rellenoSuave))
                     }
                     .accessibilityLabel("Cerrar")
                 }
 
                 VStack(alignment: .leading, spacing: 8) {
                     Text("¿Necesitas ayuda?")
-                        .font(.largeTitle.weight(.bold))
+                        .font(.app(.largeTitle).weight(.bold))
                         .accessibilityAddTraits(.isHeader)
                     Text("Elige una opción. Antes de llamar te pediremos confirmar.")
-                        .font(.body)
-                        .foregroundColor(.secondary)
+                        .font(.app(.body))
+                        .foregroundColor(.textoSuave)
                 }
 
                 Button {
@@ -50,12 +50,12 @@ struct EmergenciaSheet: View {
                 } label: {
                     HStack(spacing: 14) {
                         Image(systemName: "phone.fill")
-                            .font(.title2)
+                            .font(.app(.title2))
                         VStack(alignment: .leading, spacing: 2) {
                             Text("Llamar a Cruz Roja")
-                                .font(.title3.weight(.bold))
+                                .font(.app(.title3).weight(.bold))
                             Text("065 · Ambulancias en Monterrey, N.L.")
-                                .font(.subheadline)
+                                .font(.app(.subheadline))
                                 .opacity(0.9)
                         }
                         Spacer()
@@ -90,8 +90,8 @@ struct EmergenciaSheet: View {
                 } icon: {
                     Image(systemName: "info.circle")
                 }
-                .font(.footnote)
-                .foregroundColor(.secondary)
+                .font(.app(.footnote))
+                .foregroundColor(.textoSuave)
             }
             .padding(24)
         }
@@ -113,7 +113,7 @@ struct EmergenciaSheet: View {
             }
             Button("Cancelar", role: .cancel) {}
         }
-        .sensoryFeedback(.warning, trigger: llamadaPendiente?.id)
+        .vibracion(.warning, trigger: llamadaPendiente?.id)
     }
 
     private func opcion(icono: String, titulo: String, subtitulo: String, accion: @escaping () -> Void) -> some View {
@@ -124,23 +124,23 @@ struct EmergenciaSheet: View {
                         .fill(Color.tintaSuave)
                         .frame(width: 48, height: 48)
                     Image(systemName: icono)
-                        .font(.title3)
+                        .font(.app(.title3))
                         .foregroundColor(.brandRed)
                 }
                 .accessibilityHidden(true)
                 VStack(alignment: .leading, spacing: 2) {
                     Text(titulo)
-                        .font(.headline)
+                        .font(.app(.headline))
                         .foregroundColor(.primary)
                     Text(subtitulo)
-                        .font(.subheadline)
-                        .foregroundColor(.secondary)
+                        .font(.app(.subheadline))
+                        .foregroundColor(.textoSuave)
                 }
                 .multilineTextAlignment(.leading)
                 Spacer(minLength: 0)
                 Image(systemName: "chevron.right")
-                    .font(.subheadline.weight(.semibold))
-                    .foregroundColor(Color(white: 0.6))
+                    .font(.app(.subheadline).weight(.semibold))
+                    .foregroundColor(Color.iconoSuave)
             }
             .padding(16)
             .tarjetaBorde()

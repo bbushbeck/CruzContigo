@@ -46,8 +46,8 @@ struct OnboardingRoleView: View {
         HStack {
             Button(action: {}) {
                 Image(systemName: "chevron.left")
-                    .font(.title3)
-                    .foregroundColor(.black)
+                    .font(.app(.title3))
+                    .foregroundColor(.primary)
             }
             Spacer()
         }
@@ -57,16 +57,16 @@ struct OnboardingRoleView: View {
     private var titleSection: some View {
         VStack(alignment: .leading, spacing: 12) {
             Text("PASO 1 DE 2")
-                .font(.caption)
+                .font(.app(.caption))
                 .fontWeight(.bold)
                 .foregroundColor(.brandRed)
 
             Text("¿Cómo usarás\nCruzContigo?")
-                .font(.system(size: 32, weight: .bold))
+                .font(.app(.largeTitle).weight(.bold))
 
             Text("Elige la opción que mejor te describa.")
-                .font(.body)
-                .foregroundColor(.secondary)
+                .font(.app(.body))
+                .foregroundColor(.textoSuave)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(.horizontal, 24)
@@ -99,8 +99,8 @@ struct OnboardingRoleView: View {
         VStack(spacing: 14) {
             PrimaryButton(title: "Continuar", action: {})
             Text("Podrás cambiar tu perfil más adelante.")
-                .font(.footnote)
-                .foregroundColor(.secondary)
+                .font(.app(.footnote))
+                .foregroundColor(.textoSuave)
         }
         .padding(.horizontal, 24)
     }
@@ -111,14 +111,14 @@ struct OnboardingRoleView: View {
 struct CompactBrandHeader: View {
     var body: some View {
         VStack(spacing: 2) {
-            Text("Cruz").font(.title2).fontWeight(.bold)
+            Text("Cruz").font(.app(.title2)).fontWeight(.bold)
             + Text("Contigo")
-                .font(.title2).fontWeight(.bold)
+                .font(.app(.title2)).fontWeight(.bold)
                 .foregroundColor(.brandRed)
 
             Text("Cuidar es estar juntos")
-                .font(.footnote)
-                .foregroundColor(.secondary)
+                .font(.app(.footnote))
+                .foregroundColor(.textoSuave)
         }
     }
 }
@@ -133,7 +133,7 @@ struct ProgressBarView: View {
         GeometryReader { geo in
             ZStack(alignment: .leading) {
                 Capsule()
-                    .fill(Color(white: 0.88))
+                    .fill(Color(.systemFill))
                     .frame(height: 4)
                 Capsule()
                     .fill(Color.brandRed)
@@ -161,11 +161,11 @@ struct RoleCard: View {
 
                     VStack(alignment: .leading, spacing: 4) {
                         Text(title)
-                            .font(.headline)
+                            .font(.app(.headline))
                             .foregroundColor(.primary)
                         Text(subtitle)
-                            .font(.subheadline)
-                            .foregroundColor(.secondary)
+                            .font(.app(.subheadline))
+                            .foregroundColor(.textoSuave)
                             .multilineTextAlignment(.leading)
                     }
                     Spacer()
@@ -173,13 +173,13 @@ struct RoleCard: View {
                 .padding(20)
 
                 Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
-                    .font(.title3)
-                    .foregroundColor(isSelected ? .brandRed : Color(white: 0.78))
+                    .font(.app(.title3))
+                    .foregroundColor(isSelected ? .brandRed : Color.iconoSuave)
                     .padding(14)
             }
             .background(
                 RoundedRectangle(cornerRadius: 20)
-                    .fill(isSelected ? Color.brandRed.opacity(0.05) : Color.white)
+                    .fill(isSelected ? Color.brandRed.opacity(0.05) : Color(.systemBackground))
             )
             .overlay(
                 RoundedRectangle(cornerRadius: 20)
@@ -187,12 +187,14 @@ struct RoleCard: View {
             )
         }
         .buttonStyle(.plain)
+        .accessibilityElement(children: .combine)
+        .accessibilityAddTraits(isSelected ? [.isButton, .isSelected] : .isButton)
     }
 
     private var iconView: some View {
         ZStack {
             Circle()
-                .fill(isSelected ? Color.brandRed.opacity(0.08) : Color(white: 0.95))
+                .fill(isSelected ? Color.brandRed.opacity(0.08) : Color.rellenoSuave)
                 .frame(width: 56, height: 56)
             Image(systemName: icon)
                 .font(.system(size: 24))
