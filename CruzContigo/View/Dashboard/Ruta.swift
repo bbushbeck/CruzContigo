@@ -18,7 +18,7 @@ extension View {
             Group {
                 switch ruta {
                 case .agregarFamiliar:
-                    AddFamiliarView()
+                    AltaPersonaView()
                 case .familiar(let id):
                     FamiliarDetailView(familiarID: id)
                 case .elegirFamiliar(let modulo):
@@ -28,6 +28,7 @@ extension View {
                 }
             }
             .toolbar(.hidden, for: .navigationBar)
+            .toolbar(.hidden, for: .tabBar)
         }
     }
 }

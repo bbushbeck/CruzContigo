@@ -8,6 +8,7 @@ import SwiftUI
 struct ModuloPendienteView: View {
     let modulo: Modulo
     let familiarID: UUID?
+    var mostrarAtras = true
 
     @Environment(FamiliaresStore.self) private var store
     @Environment(\.dismiss) private var dismiss
@@ -18,26 +19,31 @@ struct ModuloPendienteView: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            HStack {
-                BrandBackButton { dismiss() }
-                Spacer()
+            if mostrarAtras {
+                HStack {
+                    BrandBackButton { dismiss() }
+                    Spacer()
+                }
+                .padding(.horizontal, 24)
+                .padding(.top, 12)
             }
-            .padding(.horizontal, 24)
-            .padding(.top, 12)
 
             Spacer()
 
             VStack(spacing: 16) {
                 ZStack {
                     RoundedRectangle(cornerRadius: 24)
-                        .fill(Color.brandRed.opacity(0.08))
+                        .fill(Color.tintaSuave)
                         .frame(width: 96, height: 96)
                     Image(systemName: modulo.icono)
-                        .font(.system(size: 42))
+                        .font(.largeTitle)
                         .foregroundColor(.brandRed)
                 }
+                .accessibilityHidden(true)
                 Text(modulo.titulo)
-                    .font(.system(size: 28, weight: .bold))
+                    .font(.title.weight(.bold))
+                    .multilineTextAlignment(.center)
+                    .accessibilityAddTraits(.isHeader)
                 if let familiar {
                     Text("de \(familiar.nombreCompleto)")
                         .font(.headline)
@@ -80,7 +86,7 @@ struct ElegirFamiliarView: View {
                             .fontWeight(.bold)
                             .foregroundColor(.brandRed)
                         Text("¿De quién?")
-                            .font(.system(size: 30, weight: .bold))
+                            .font(.largeTitle.weight(.bold))
                         Text("Elige a la persona cuya información quieres consultar.")
                             .foregroundColor(.secondary)
                     }

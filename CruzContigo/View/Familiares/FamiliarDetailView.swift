@@ -65,11 +65,22 @@ struct FamiliarDetailView: View {
         VStack(spacing: 12) {
             FamiliarAvatar(familiar: familiar, tamano: 96)
             Text(familiar.nombreCompleto)
-                .font(.system(size: 26, weight: .bold))
+                .font(.title.weight(.bold))
                 .multilineTextAlignment(.center)
             HStack(spacing: 8) {
                 InfoChip(texto: familiar.parentesco.titulo, icono: "heart.fill")
                 InfoChip(texto: familiar.tipoCuidado.titulo, icono: familiar.tipoCuidado.icono)
+            }
+            if let telefono = familiar.telefono, let url = URL(string: "tel://\(telefono)") {
+                Link(destination: url) {
+                    Label("Llamar a \(familiar.nombre)", systemImage: "phone.fill")
+                        .font(.subheadline.weight(.bold))
+                        .foregroundColor(.brandRed)
+                        .padding(.horizontal, 18)
+                        .frame(minHeight: 44)
+                        .background(Capsule().fill(Color.tintaSuave))
+                }
+                .padding(.top, 4)
             }
         }
         .frame(maxWidth: .infinity)
@@ -96,37 +107,17 @@ struct FamiliarDetailView: View {
 
     private func modulos(_ familiar: Familiar) -> some View {
         VStack(alignment: .leading, spacing: 12) {
-            Text("Su cuidado")
-                .font(.title3)
-                .fontWeight(.bold)
-            ForEach(Modulo.allCases.filter(\.esPorFamiliar)) { modulo in
-                NavigationLink(value: Ruta.modulo(modulo, familiarID: familiar.id)) {
-                    HStack(spacing: 14) {
-                        ZStack {
-                            RoundedRectangle(cornerRadius: 12)
-                                .fill(Color.brandRed.opacity(0.08))
-                                .frame(width: 44, height: 44)
-                            Image(systemName: modulo.icono)
-                                .foregroundColor(.brandRed)
-                        }
-                        VStack(alignment: .leading, spacing: 2) {
-                            Text(modulo.titulo).font(.headline).foregroundColor(.primary)
-                            Text(modulo.subtitulo).font(.caption).foregroundColor(.secondary)
-                        }
-                        Spacer()
-                        Image(systemName: "chevron.right")
-                            .font(.subheadline.weight(.semibold))
-                            .foregroundColor(Color(white: 0.7))
+            SeccionHeader(titulo: "Su cuidado")
+            VStack(spacing: 0) {
+                ForEach(Array(Modulo.delPerfil.enumerated()), id: \.element) { indice, modulo in
+                    if indice > 0 { Divider().padding(.leading, 72) }
+                    NavigationLink(value: Ruta.modulo(modulo, familiarID: familiar.id)) {
+                        ModuloFila(modulo: modulo)
                     }
-                    .padding(14)
-                    .background(
-                        RoundedRectangle(cornerRadius: 18)
-                            .stroke(Color.borderGray, lineWidth: 1.5)
-                    )
-                    .contentShape(Rectangle())
+                    .buttonStyle(.plain)
                 }
-                .buttonStyle(.plain)
             }
+            .tarjetaBorde()
         }
     }
 

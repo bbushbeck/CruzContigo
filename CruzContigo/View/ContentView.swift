@@ -9,8 +9,9 @@ struct ContentView: View {
     @State private var familiaresStore = FamiliaresStore()
 
     var body: some View {
-        DashboardView()
+        MainTabView()
             .environment(familiaresStore)
+            .environment(\.locale, Locale(identifier: "es_MX"))
     }
 }
 
