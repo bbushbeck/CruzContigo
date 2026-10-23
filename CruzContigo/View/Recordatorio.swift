@@ -33,6 +33,7 @@ final class RecordatoriosStore {
 struct RecordatoriosView: View {
     /// Si se indica, solo se muestran los recordatorios de ese familiar.
     var familiarID: UUID? = nil
+    var mostrarAtras = true
 
     @Environment(FamiliaresStore.self) private var familiares
     @Environment(RecordatoriosStore.self) private var store
@@ -51,25 +52,27 @@ struct RecordatoriosView: View {
         @Bindable var store = store
 
         VStack(spacing: 0) {
-            HStack {
-                BrandBackButton { dismiss() }
-                Spacer()
+            if mostrarAtras {
+                HStack {
+                    BrandBackButton { dismiss() }
+                    Spacer()
+                }
+                .padding(.horizontal, 24)
+                .padding(.top, 12)
             }
-            .padding(.horizontal, 24)
-            .padding(.top, 12)
 
             ScrollView {
                 VStack(alignment: .leading, spacing: 20) {
 
                     Text("Mis recordatorios")
-                        .font(.title2.bold())
+                        .font(.app(.title2).bold())
 
                     Text(familiar.map { "Organiza el cuidado de \($0.nombre)." } ?? "Organiza el cuidado de tus familiares.")
-                        .font(.subheadline)
-                        .foregroundStyle(.gray)
+                        .font(.app(.subheadline))
+                        .foregroundStyle(Color.textoSuave)
 
                     Text("Próximos recordatorios")
-                        .font(.headline)
+                        .font(.app(.headline))
 
                     if !store.recordatorios.contains(where: { familiarID == nil || $0.familiarID == familiarID }) {
                         ContentUnavailableView("Sin recordatorios", systemImage: "bell",
@@ -87,12 +90,12 @@ struct RecordatoriosView: View {
 
                                 VStack(alignment: .leading, spacing: 5) {
                                     Text(recordatorio.titulo)
-                                        .font(.subheadline.bold())
+                                        .font(.app(.subheadline).bold())
                                         .strikethrough(recordatorio.completado)
 
                                     Text(nombre(de: recordatorio.familiarID))
-                                        .font(.caption)
-                                        .foregroundStyle(.gray)
+                                        .font(.app(.caption))
+                                        .foregroundStyle(Color.textoSuave)
 
                                     Text(recordatorio.fecha,
                                          format: .dateTime
@@ -100,7 +103,7 @@ struct RecordatoriosView: View {
                                             .month()
                                             .hour()
                                             .minute())
-                                        .font(.caption)
+                                        .font(.app(.caption))
                                         .foregroundStyle(rojo)
                                 }
 
@@ -114,7 +117,7 @@ struct RecordatoriosView: View {
                                         ? "checkmark.circle.fill"
                                         : "circle"
                                     )
-                                    .font(.title2)
+                                    .font(.app(.title2))
                                     .foregroundStyle(rojo)
                                 }
                             }

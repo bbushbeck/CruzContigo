@@ -27,7 +27,7 @@ enum Parentesco: String, Codable, CaseIterable, Identifiable {
 }
 
 enum TipoCuidado: String, Codable, CaseIterable, Identifiable {
-    case adultoMayor, discapacidad, enfermedadCronica, recuperacion, otro
+    case adultoMayor, discapacidad, enfermedadCronica, recuperacion, menorNecesidades, otro
 
     var id: String { rawValue }
 
@@ -37,6 +37,7 @@ enum TipoCuidado: String, Codable, CaseIterable, Identifiable {
         case .discapacidad: "Discapacidad"
         case .enfermedadCronica: "Enfermedad crónica"
         case .recuperacion: "En recuperación"
+        case .menorNecesidades: "Menor con necesidades especiales"
         case .otro: "Otro"
         }
     }
@@ -47,7 +48,19 @@ enum TipoCuidado: String, Codable, CaseIterable, Identifiable {
         case .discapacidad: "figure.roll"
         case .enfermedadCronica: "heart.text.square"
         case .recuperacion: "bandage"
+        case .menorNecesidades: "figure.and.child.holdinghands"
         case .otro: "person"
+        }
+    }
+
+    var descripcion: String {
+        switch self {
+        case .adultoMayor: "Necesita apoyo por su edad."
+        case .discapacidad: "Motriz, visual, auditiva, intelectual u otra."
+        case .enfermedadCronica: "Diabetes, hipertensión u otra condición de largo plazo."
+        case .recuperacion: "Se recupera de una cirugía, accidente o enfermedad."
+        case .menorNecesidades: "Niña, niño o adolescente que requiere cuidados especiales."
+        case .otro: "Otra situación que no aparece aquí."
         }
     }
 }
@@ -71,6 +84,8 @@ struct Familiar: Codable, Identifiable, Hashable {
         return (n + a).uppercased()
     }
 
+    var indiceColor: Int { Int(id.uuid.0) }
+
     var edad: Int {
         Calendar.current.dateComponents([.year], from: fechaNacimiento, to: Date()).year ?? 0
     }
@@ -79,40 +94,105 @@ struct Familiar: Codable, Identifiable, Hashable {
 struct FamiliarDraft {
     var nombre = ""
     var apellidos = ""
-    var fechaNacimiento = Calendar.current.date(byAdding: .year, value: -70, to: Date()) ?? Date()
+    var dia = ""
+    var mes: Int? = nil
+    var anio = ""
     var parentesco: Parentesco? = nil
     var tipoCuidado: TipoCuidado? = nil
     var telefono = ""
     var notas = ""
 
-    enum Campo: Hashable { case nombre, apellidos, fechaNacimiento, parentesco, tipoCuidado, telefono }
+    enum Campo: Hashable {
+        case nombre, apellidos, dia, mes, anio, parentesco, tipoCuidado, telefono, notas
+    }
+
+    enum Paso: Int, CaseIterable, Comparable {
+        case nombre, relacion, nacimiento, cuidado, contacto, revision
+
+        static let preguntas: [Paso] = [.nombre, .relacion, .nacimiento, .cuidado, .contacto]
+
+        var campos: [Campo] {
+            switch self {
+            case .nombre: [.nombre, .apellidos]
+            case .relacion: [.parentesco]
+            case .nacimiento: [.dia, .mes, .anio]
+            case .cuidado: [.tipoCuidado]
+            case .contacto: [.telefono, .notas]
+            case .revision: []
+            }
+        }
+
+        static func < (a: Paso, b: Paso) -> Bool { a.rawValue < b.rawValue }
+    }
+
+    static let meses = ["enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"]
+
+    var nombreCorto: String {
+        let limpio = nombre.trimmingCharacters(in: .whitespaces)
+        return limpio.split(separator: " ").first.map(String.init) ?? ""
+    }
+
+    var telefonoDigitos: String {
+        let digitos = telefono.filter(\.isNumber)
+        if digitos.count == 12, digitos.hasPrefix("52") { return String(digitos.dropFirst(2)) }
+        return digitos
+    }
+
+    var fechaNacimiento: Date? {
+        guard let d = Int(dia), let mes, let a = Int(anio) else { return nil }
+        let componentes = DateComponents(year: a, month: mes, day: d, hour: 12)
+        guard componentes.isValidDate(in: Calendar.current) else { return nil }
+        return Calendar.current.date(from: componentes)
+    }
+
+    var edad: Int? {
+        guard let fechaNacimiento, fechaNacimiento <= Date() else { return nil }
+        return Calendar.current.dateComponents([.year], from: fechaNacimiento, to: Date()).year
+    }
+
+    var tieneDatos: Bool {
+        !nombre.isEmpty || !apellidos.isEmpty || !dia.isEmpty || mes != nil || !anio.isEmpty
+            || parentesco != nil || tipoCuidado != nil || !telefono.isEmpty || !notas.isEmpty
+    }
 
     var errores: [Campo: String] {
         var e: [Campo: String] = [:]
         let nombreLimpio = nombre.trimmingCharacters(in: .whitespaces)
         let apellidosLimpios = apellidos.trimmingCharacters(in: .whitespaces)
 
-        if nombreLimpio.isEmpty { e[.nombre] = "El nombre es obligatorio." }
-        else if nombreLimpio.count < 2 { e[.nombre] = "Escribe al menos 2 letras." }
+        if nombreLimpio.isEmpty { e[.nombre] = "Escribe su nombre." }
+        else if nombreLimpio.count < 2 { e[.nombre] = "El nombre debe tener al menos 2 letras." }
+        if apellidosLimpios.isEmpty { e[.apellidos] = "Escribe al menos un apellido." }
 
-        if apellidosLimpios.isEmpty { e[.apellidos] = "Los apellidos son obligatorios." }
+        let anioActual = Calendar.current.component(.year, from: Date())
+        if dia.isEmpty { e[.dia] = "Falta el día." }
+        else if let d = Int(dia), !(1...31).contains(d) { e[.dia] = "El día debe estar entre 1 y 31." }
+        if mes == nil { e[.mes] = "Elige el mes." }
+        if anio.isEmpty { e[.anio] = "Falta el año." }
+        else if anio.count != 4 { e[.anio] = "Escribe el año con 4 cifras, por ejemplo 1955." }
+        else if let a = Int(anio), a < anioActual - 120 { e[.anio] = "Revisa el año: parece demasiado antiguo." }
+        if e[.dia] == nil, e[.mes] == nil, e[.anio] == nil {
+            if fechaNacimiento == nil { e[.dia] = "Esa fecha no existe. Revisa el día y el mes." }
+            else if let f = fechaNacimiento, f > Date() { e[.anio] = "La fecha no puede ser futura." }
+        }
 
-        if fechaNacimiento > Date() { e[.fechaNacimiento] = "La fecha no puede ser futura." }
+        if parentesco == nil { e[.parentesco] = "Elige una opción para continuar." }
+        if tipoCuidado == nil { e[.tipoCuidado] = "Elige una opción para continuar." }
 
-        if parentesco == nil { e[.parentesco] = "Selecciona el parentesco." }
-        if tipoCuidado == nil { e[.tipoCuidado] = "Selecciona el tipo de cuidado." }
-
-        let digitos = telefono.filter(\.isNumber)
-        if !telefono.isEmpty && digitos.count != 10 {
-            e[.telefono] = "El teléfono debe tener 10 dígitos."
+        if !telefono.isEmpty && telefonoDigitos.count != 10 {
+            e[.telefono] = "El teléfono debe tener 10 dígitos, por ejemplo 81 1234 5678."
         }
         return e
+    }
+
+    func errores(en paso: Paso) -> [Campo: String] {
+        errores.filter { paso.campos.contains($0.key) }
     }
 
     var esValido: Bool { errores.isEmpty }
 
     func construir() -> Familiar? {
-        guard esValido, let parentesco, let tipoCuidado else { return nil }
+        guard esValido, let parentesco, let tipoCuidado, let fechaNacimiento else { return nil }
         let notasLimpias = notas.trimmingCharacters(in: .whitespacesAndNewlines)
         return Familiar(
             nombre: nombre.trimmingCharacters(in: .whitespaces),
@@ -120,7 +200,7 @@ struct FamiliarDraft {
             fechaNacimiento: fechaNacimiento,
             parentesco: parentesco,
             tipoCuidado: tipoCuidado,
-            telefono: telefono.isEmpty ? nil : telefono.filter(\.isNumber),
+            telefono: telefono.isEmpty ? nil : telefonoDigitos,
             notas: notasLimpias.isEmpty ? nil : notasLimpias
         )
     }

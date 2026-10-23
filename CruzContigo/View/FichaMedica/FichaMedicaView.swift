@@ -64,7 +64,7 @@ struct FichaMedicaView: View {
                     editando = true
                 } label: {
                     Label("Editar", systemImage: "pencil")
-                        .font(.subheadline.weight(.bold))
+                        .font(.app(.subheadline).weight(.bold))
                         .foregroundColor(.brandRed)
                         .padding(.horizontal, 14)
                         .frame(height: 44)
@@ -78,7 +78,7 @@ struct FichaMedicaView: View {
     private var titulo: some View {
         VStack(alignment: .leading, spacing: 8) {
             Text("FICHA MÉDICA")
-                .font(.caption)
+                .font(.app(.caption))
                 .fontWeight(.bold)
                 .foregroundColor(.brandRed)
             Text(familiar?.nombreCompleto ?? "Familiar")
@@ -96,17 +96,17 @@ struct FichaMedicaView: View {
             VStack(spacing: 14) {
                 ZStack {
                     Circle()
-                        .fill(Color.brandRed.opacity(0.08))
+                        .fill(Color.clear)
                         .frame(width: 96, height: 96)
                     Image(systemName: "doc.text.fill")
                         .font(.system(size: 40))
                         .foregroundColor(.brandRed)
                 }
                 Text("Sin ficha médica")
-                    .font(.headline)
+                    .font(.app(.headline))
                 Text("Registra su tipo de sangre, alergias y enfermedades para tenerlos a la mano en una emergencia.")
-                    .font(.subheadline)
-                    .foregroundColor(.secondary)
+                    .font(.app(.subheadline))
+                    .foregroundColor(.textoSuave)
                     .multilineTextAlignment(.center)
             }
             .padding(.horizontal, 32)
@@ -126,7 +126,7 @@ struct FichaMedicaView: View {
                 SeccionFicha(titulo: "Alergias", icono: "allergens", vacio: "Sin alergias registradas") {
                     ForEach(ficha.alergias) { alergia in
                         HStack {
-                            Text(alergia.nombre).font(.body)
+                            Text(alergia.nombre).font(.app(.body))
                             Spacer()
                             SeveridadChip(severidad: alergia.severidad)
                         }
@@ -137,9 +137,9 @@ struct FichaMedicaView: View {
                 SeccionFicha(titulo: "Enfermedades", icono: "heart.text.square", vacio: "Sin enfermedades registradas") {
                     ForEach(ficha.enfermedades) { enfermedad in
                         VStack(alignment: .leading, spacing: 2) {
-                            Text(enfermedad.nombre).font(.body)
+                            Text(enfermedad.nombre).font(.app(.body))
                             if let notas = enfermedad.notas {
-                                Text(notas).font(.caption).foregroundColor(.secondary)
+                                Text(notas).font(.app(.caption)).foregroundColor(.textoSuave)
                             }
                         }
                         .frame(maxWidth: .infinity, alignment: .leading)
@@ -149,13 +149,13 @@ struct FichaMedicaView: View {
 
                 if let observaciones = ficha.observaciones {
                     SeccionFicha(titulo: "Observaciones", icono: "note.text", vacio: "") {
-                        Text(observaciones).font(.body)
+                        Text(observaciones).font(.app(.body))
                     } esVacio: { false }
                 }
 
                 Text("Actualizada el \(ficha.ultimaActualizacion.formatted(date: .long, time: .shortened))")
-                    .font(.footnote)
-                    .foregroundColor(.secondary)
+                    .font(.app(.footnote))
+                    .foregroundColor(.textoSuave)
                     .frame(maxWidth: .infinity)
             }
             .padding(.horizontal, 24)
@@ -168,14 +168,14 @@ struct FichaMedicaView: View {
         HStack(spacing: 16) {
             ZStack {
                 RoundedRectangle(cornerRadius: 16)
-                    .fill(Color.white.opacity(0.2))
+                    .fill(Color.clear)
                     .frame(width: 64, height: 64)
                 Image(systemName: "drop.fill")
                     .font(.system(size: 28))
             }
             VStack(alignment: .leading, spacing: 2) {
                 Text("Tipo sanguíneo")
-                    .font(.subheadline.weight(.semibold))
+                    .font(.app(.subheadline).weight(.semibold))
                     .opacity(0.9)
                 Text(ficha.tipoSanguineo?.titulo ?? "—")
                     .font(.system(size: 34, weight: .bold))
@@ -199,13 +199,13 @@ struct SeccionFicha<Content: View>: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             Label(titulo, systemImage: icono)
-                .font(.headline)
+                .font(.app(.headline))
                 .foregroundColor(.primary)
             VStack(alignment: .leading, spacing: 0) {
                 if esVacio() {
                     Text(vacio)
-                        .font(.subheadline)
-                        .foregroundColor(.secondary)
+                        .font(.app(.subheadline))
+                        .foregroundColor(.textoSuave)
                         .padding(.vertical, 6)
                 } else {
                     content
@@ -216,7 +216,7 @@ struct SeccionFicha<Content: View>: View {
             .frame(maxWidth: .infinity, alignment: .leading)
             .background(
                 RoundedRectangle(cornerRadius: 18)
-                    .stroke(Color.borderGray, lineWidth: 1.5)
+                    .stroke(Color.borderGray, lineWidth: 1)
             )
         }
     }
@@ -235,7 +235,7 @@ struct SeveridadChip: View {
 
     var body: some View {
         Text(severidad.titulo)
-            .font(.caption.weight(.bold))
+            .font(.app(.caption).weight(.bold))
             .foregroundColor(color)
             .padding(.horizontal, 10)
             .padding(.vertical, 4)

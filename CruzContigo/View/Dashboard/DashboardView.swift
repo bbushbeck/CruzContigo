@@ -6,105 +6,144 @@
 import SwiftUI
 
 struct DashboardView: View {
-    @Environment(FamiliaresStore.self) private var store
-    @State private var ruta: [Ruta] = []
-    @AppStorage("onboardingCompletado") private var onboardingCompletado = true
+    @Binding var pestana: Pestana
 
-    private let columnas = [GridItem(.flexible(), spacing: 12), GridItem(.flexible(), spacing: 12)]
+    @Environment(FamiliaresStore.self) private var store
+    @Environment(\.dynamicTypeSize) private var tipo
+    @AppStorage(ClavesApp.personaSeleccionada) private var seleccionID = ""
+    @AppStorage(ClavesApp.primerosPasosOcultos) private var primerosPasosOcultos = false
+    @State private var ruta: [Ruta] = []
+    @State private var mostrarEmergencia = false
+    @Environment(\.openURL) private var abrirURL
+
+    private var seleccionada: Familiar? {
+        store.familiares.first { $0.id.uuidString == seleccionID } ?? store.familiares.first
+    }
 
     var body: some View {
         NavigationStack(path: $ruta) {
             ScrollView {
                 VStack(alignment: .leading, spacing: 28) {
-                    header
-                    seccionFamiliares
-                    seccionModulos
+                    encabezado
+                    saludo
+                    seccionPersonas
+                    Button { mostrarEmergencia = true } label: { EmergenciaCard() }
+                        .buttonStyle(.plain)
+                    if let seleccionada {
+                        seccionAccesos(seleccionada)
+                        if !primerosPasosOcultos {
+                            PrimerosPasosView(
+                                persona: seleccionada,
+                                abrir: { ruta.append($0) },
+                                ocultar: { withAnimation { primerosPasosOcultos = true } }
+                            )
+                        }
+                        seccionRecordatorios
+                    }
                 }
-                .padding(.horizontal, 24)
-                .padding(.top, 12)
+                .padding(.horizontal, 20)
+                .padding(.top, 8)
                 .padding(.bottom, 32)
             }
+            .background(Color(.systemBackground))
+            .fondoBarraEstado()
             .refreshable { await store.cargar() }
             .toolbar(.hidden, for: .navigationBar)
             .conDestinos()
         }
-        .tint(.brandRed)
         .task {
             if store.estado == .inicial { await store.cargar() }
         }
+        .sheet(isPresented: $mostrarEmergencia) {
+            EmergenciaSheet(persona: seleccionada) { modulo in
+                mostrarEmergencia = false
+                if let seleccionada {
+                    ruta.append(.modulo(modulo, familiarID: seleccionada.id))
+                } else {
+                    ruta.append(.agregarFamiliar)
+                }
+            }
+        }
     }
 
-    private var header: some View {
-        HStack(alignment: .center) {
-            VStack(alignment: .leading, spacing: 4) {
-                Text(saludo)
-                    .font(.subheadline)
-                    .fontWeight(.semibold)
-                    .foregroundColor(.secondary)
+    private var encabezado: some View {
+        HStack(spacing: 10) {
+            Image("LogoIcono")
+                .resizable()
+                .scaledToFit()
+                .frame(width: 44, height: 44)
+                .accessibilityIgnoresInvertColors()
+                .accessibilityHidden(true)
+            VStack(alignment: .leading, spacing: 0) {
                 Text("Cruz\(Text("Contigo").foregroundColor(.brandRed))")
-                    .font(.title).fontWeight(.bold)
+                    .font(.app(.title3).weight(.bold))
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.5)
+                if !tipo.isAccessibilitySize {
+                    Text("Cuidar es estar juntos")
+                        .font(.app(.caption2))
+                        .foregroundColor(.textoSuave)
+                }
             }
+            .accessibilityElement(children: .combine)
+            .accessibilityAddTraits(.isHeader)
             Spacer()
-            Menu {
-                Button(role: .destructive) {
-                    withAnimation { onboardingCompletado = false }
-                } label: {
-                    Label("Cerrar sesión", systemImage: "rectangle.portrait.and.arrow.right")
-                }
+            Button {
+                pestana = .mas
             } label: {
-                ZStack {
-                    RoundedRectangle(cornerRadius: 14)
-                        .fill(Color.brandRed)
-                        .frame(width: 48, height: 48)
-                    Image(systemName: "cross.case.fill")
-                        .font(.system(size: 22))
-                        .foregroundColor(.white)
-                }
+                Image(systemName: "person.crop.circle")
+                    .font(.app(.title2))
+                    .foregroundColor(.textoSuave)
+                    .frame(width: 44, height: 44)
+                    .background(Circle().fill(Color.rellenoSuave))
             }
-            .accessibilityLabel("Opciones de cuenta")
+            .accessibilityLabel("Tu perfil y más opciones")
+        }
+        .accessibilityElement(children: .contain)
+    }
+
+    private var saludo: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            Text(textoSaludo)
+                .font(.app(.largeTitle).weight(.bold))
+                .accessibilityAddTraits(.isHeader)
+            Text(subtitulo)
+                .font(.app(.body))
+                .foregroundColor(.textoSuave)
         }
     }
 
-    private var saludo: String {
+    private var textoSaludo: String {
         switch Calendar.current.component(.hour, from: Date()) {
-        case 5..<12: "Buenos días"
-        case 12..<19: "Buenas tardes"
-        default: "Buenas noches"
+        case 5..<12: "¡Buenos días!"
+        case 12..<19: "¡Buenas tardes!"
+        default: "¡Buenas noches!"
         }
     }
 
-    private var seccionFamiliares: some View {
-        VStack(alignment: .leading, spacing: 14) {
-            HStack(alignment: .firstTextBaseline) {
-                VStack(alignment: .leading, spacing: 2) {
-                    Text("Personas a tu cuidado")
-                        .font(.title3)
-                        .fontWeight(.bold)
-                    if !store.familiares.isEmpty {
-                        Text("\(store.familiares.count) registrada\(store.familiares.count == 1 ? "" : "s")")
-                            .font(.footnote)
-                            .foregroundColor(.secondary)
-                    }
-                }
-                Spacer()
+    private var subtitulo: String {
+        switch store.familiares.count {
+        case 0: "Empecemos por registrar a la persona que cuidas."
+        case 1: "Aquí tienes lo importante sobre \(store.familiares[0].nombre)."
+        default: "Elige a quién quieres atender ahora."
+        }
+    }
+
+    private var seccionPersonas: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            SeccionHeader(titulo: "Personas a tu cuidado") {
                 if !store.familiares.isEmpty {
                     NavigationLink(value: Ruta.agregarFamiliar) {
-                        Label("Agregar", systemImage: "plus")
-                            .font(.subheadline.weight(.bold))
-                            .foregroundColor(.brandRed)
-                            .padding(.horizontal, 12)
-                            .padding(.vertical, 8)
-                            .background(Capsule().fill(Color.brandRed.opacity(0.08)))
+                        EnlaceTexto(titulo: "Agregar", icono: "plus")
                     }
                 }
             }
-
-            contenidoFamiliares
+            contenidoPersonas
         }
     }
 
     @ViewBuilder
-    private var contenidoFamiliares: some View {
+    private var contenidoPersonas: some View {
         switch store.estado {
         case .inicial:
             cargando
@@ -115,65 +154,153 @@ struct DashboardView: View {
                 Task { await store.cargar() }
             }
         default:
-            listaFamiliares
+            if store.familiares.isEmpty {
+                EstadoVacioFamiliares {
+                    ruta.append(.agregarFamiliar)
+                }
+            } else if tipo.isAccessibilitySize {
+                listaVertical
+            } else {
+                carrusel
+            }
+        }
+    }
+
+    private var carrusel: some View {
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(alignment: .top, spacing: 12) {
+                ForEach(store.familiares) { familiar in
+                    Button {
+                        seleccionar(familiar)
+                    } label: {
+                        PersonaTile(familiar: familiar, seleccionada: familiar.id == seleccionada?.id)
+                    }
+                    .buttonStyle(.plain)
+                    .contextMenu { menuPersona(familiar) }
+                    .accessibilityAction(named: "Ver perfil de \(familiar.nombre)") {
+                        ruta.append(.familiar(familiar.id))
+                    }
+                    .accessibilityActions {
+                        if let telefono = familiar.telefono, let url = URL(string: "tel://\(telefono)") {
+                            Button("Llamar a \(familiar.nombre)") { abrirURL(url) }
+                        }
+                    }
+                }
+                NavigationLink(value: Ruta.agregarFamiliar) {
+                    AgregarPersonaTile()
+                }
+                .buttonStyle(.plain)
+            }
+            .fixedSize(horizontal: false, vertical: true)
+            .padding(.vertical, 2)
+            .padding(.horizontal, 20)
+        }
+        .padding(.horizontal, -20)
+        .vibracion(.selection, trigger: seleccionID)
+    }
+
+    private var listaVertical: some View {
+        VStack(spacing: 12) {
+            ForEach(store.familiares) { familiar in
+                Button {
+                    seleccionar(familiar)
+                } label: {
+                    FamiliarCard(familiar: familiar)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 20)
+                                .stroke(familiar.id == seleccionada?.id ? Color.brandRed : .clear, lineWidth: 2)
+                        )
+                }
+                .buttonStyle(.plain)
+                .accessibilityAddTraits(familiar.id == seleccionada?.id ? .isSelected : [])
+            }
+        }
+    }
+
+    @ViewBuilder
+    private func menuPersona(_ familiar: Familiar) -> some View {
+        Button {
+            ruta.append(.familiar(familiar.id))
+        } label: {
+            Label("Ver perfil", systemImage: "person.text.rectangle")
+        }
+        if let telefono = familiar.telefono, let url = URL(string: "tel://\(telefono)") {
+            Link(destination: url) {
+                Label("Llamar a \(familiar.nombre)", systemImage: "phone")
+            }
+        }
+    }
+
+    private func seccionAccesos(_ persona: Familiar) -> some View {
+        VStack(alignment: .leading, spacing: 12) {
+            SeccionHeader(titulo: "Accesos rápidos") {
+                NavigationLink(value: Ruta.familiar(persona.id)) {
+                    EnlaceTexto(titulo: "Perfil de \(persona.nombre)")
+                }
+            }
+            if tipo.isAccessibilitySize {
+                VStack(spacing: 10) {
+                    ForEach(Modulo.accesosRapidos) { modulo in
+                        NavigationLink(value: Ruta.modulo(modulo, familiarID: persona.id)) {
+                            AccesoRapidoTile(modulo: modulo, compacto: false)
+                        }
+                        .buttonStyle(.plain)
+                    }
+                }
+            } else {
+                HStack(spacing: 10) {
+                    ForEach(Modulo.accesosRapidos) { modulo in
+                        NavigationLink(value: Ruta.modulo(modulo, familiarID: persona.id)) {
+                            AccesoRapidoTile(modulo: modulo)
+                        }
+                        .buttonStyle(.plain)
+                    }
+                }
+            }
+        }
+    }
+
+    private var seccionRecordatorios: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            SeccionHeader(titulo: "Próximos recordatorios") {
+                Button {
+                    pestana = .recordatorios
+                } label: {
+                    EnlaceTexto(titulo: "Ver todos", icono: nil)
+                }
+            }
+            HStack(spacing: 14) {
+                Image(systemName: "bell.badge")
+                    .font(.app(.title2))
+                    .foregroundColor(.textoSuave)
+                    .frame(width: 44)
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("Nada pendiente por ahora")
+                        .font(.app(.subheadline).weight(.semibold))
+                    Text("Cuando registres medicamentos o citas, sus avisos aparecerán aquí.")
+                        .font(.app(.footnote))
+                        .foregroundColor(.textoSuave)
+                }
+                Spacer(minLength: 0)
+            }
+            .padding(16)
+            .tarjetaBorde()
+            .accessibilityElement(children: .combine)
         }
     }
 
     private var cargando: some View {
         HStack {
             Spacer()
-            ProgressView("Cargando familiares…")
+            ProgressView("Cargando…")
             Spacer()
         }
         .padding(.vertical, 32)
     }
 
-    @ViewBuilder
-    private var listaFamiliares: some View {
-        if store.familiares.isEmpty {
-            EstadoVacioFamiliares {
-                ruta.append(.agregarFamiliar)
-            }
-        } else {
-            VStack(spacing: 12) {
-                ForEach(store.familiares) { familiar in
-                    NavigationLink(value: Ruta.familiar(familiar.id)) {
-                        FamiliarCard(familiar: familiar)
-                    }
-                    .buttonStyle(.plain)
-                }
-            }
-        }
-    }
-
-    private var seccionModulos: some View {
-        VStack(alignment: .leading, spacing: 14) {
-            Text("Módulos")
-                .font(.title3)
-                .fontWeight(.bold)
-
-            LazyVGrid(columns: columnas, spacing: 12) {
-                ForEach(Modulo.allCases) { modulo in
-                    Button {
-                        abrir(modulo)
-                    } label: {
-                        ModuloCard(modulo: modulo)
-                    }
-                    .buttonStyle(.plain)
-                }
-            }
-        }
-    }
-
-    private func abrir(_ modulo: Modulo) {
-        guard modulo.esPorFamiliar else {
-            ruta.append(.modulo(modulo, familiarID: nil))
-            return
-        }
-        switch store.familiares.count {
-        case 0: ruta.append(.agregarFamiliar)
-        case 1: ruta.append(.modulo(modulo, familiarID: store.familiares[0].id))
-        default: ruta.append(.elegirFamiliar(modulo))
+    private func seleccionar(_ familiar: Familiar) {
+        withAnimation(.snappy(duration: 0.2)) {
+            seleccionID = familiar.id.uuidString
         }
     }
 }
@@ -185,26 +312,108 @@ struct EstadoVacioFamiliares: View {
         VStack(spacing: 14) {
             ZStack {
                 Circle()
-                    .fill(Color.brandRed.opacity(0.08))
+                    .fill(Color.clear)
                     .frame(width: 88, height: 88)
                 Image(systemName: "person.2.badge.plus")
-                    .font(.system(size: 36))
+                    .font(.app(.largeTitle))
                     .foregroundColor(.brandRed)
             }
+            .accessibilityHidden(true)
             Text("Aún no agregas a nadie")
-                .font(.headline)
-            Text("Registra a la persona que cuidas para organizar su información médica, medicamentos y citas.")
-                .font(.subheadline)
-                .foregroundColor(.secondary)
+                .font(.app(.headline))
+            Text("Registra a la persona que cuidas para tener su información médica, medicamentos y citas en un solo lugar.")
+                .font(.app(.subheadline))
+                .foregroundColor(.textoSuave)
                 .multilineTextAlignment(.center)
-            PrimaryButton(title: "Agregar familiar", action: agregar)
+            PrimaryButton(title: "Agregar persona", action: agregar)
                 .padding(.top, 6)
+            Text("Toma menos de un minuto.")
+                .font(.app(.footnote))
+                .foregroundColor(.textoSuave)
         }
         .padding(20)
         .frame(maxWidth: .infinity)
         .background(
             RoundedRectangle(cornerRadius: 20)
-                .stroke(Color.borderGray, style: StrokeStyle(lineWidth: 1.5, dash: [6, 5]))
+                .stroke(Color.borderGray, style: StrokeStyle(lineWidth: 1, dash: [6, 5]))
+        )
+    }
+}
+
+struct PrimerosPasosView: View {
+    let persona: Familiar
+    let abrir: (Ruta) -> Void
+    let ocultar: () -> Void
+
+    private struct Paso: Identifiable {
+        let id: Int
+        let titulo: String
+        let hecho: Bool
+        let ruta: Ruta
+    }
+
+    private var pasos: [Paso] {
+        [
+            Paso(id: 1, titulo: "Agrega a una persona a tu cuidado", hecho: true, ruta: .agregarFamiliar),
+            Paso(id: 2, titulo: "Completa la información médica de \(persona.nombre)", hecho: false, ruta: .modulo(.fichaMedica, familiarID: persona.id)),
+            Paso(id: 3, titulo: "Invita a alguien a cuidar contigo", hecho: false, ruta: .modulo(.redCuidado, familiarID: nil))
+        ]
+    }
+
+    var body: some View {
+        let hechos = pasos.filter(\.hecho).count
+        VStack(alignment: .leading, spacing: 14) {
+            HStack(alignment: .firstTextBaseline) {
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("Primeros pasos")
+                        .font(.app(.headline))
+                        .accessibilityAddTraits(.isHeader)
+                    Text("\(hechos) de \(pasos.count) completados")
+                        .font(.app(.footnote))
+                        .foregroundColor(.textoSuave)
+                }
+                Spacer()
+                Button("Ocultar", action: ocultar)
+                    .font(.app(.footnote).weight(.semibold))
+                    .foregroundColor(.textoSuave)
+                    .frame(minHeight: 44)
+            }
+            ProgressBarView(progress: Double(hechos) / Double(pasos.count))
+                .accessibilityHidden(true)
+            VStack(spacing: 0) {
+                ForEach(pasos) { paso in
+                    Button {
+                        abrir(paso.ruta)
+                    } label: {
+                        HStack(spacing: 12) {
+                            Image(systemName: paso.hecho ? "checkmark.circle.fill" : "\(paso.id).circle")
+                                .font(.app(.title3))
+                                .foregroundColor(paso.hecho ? .green : .brandRed)
+                            Text(paso.titulo)
+                                .font(.app(.subheadline).weight(.semibold))
+                                .foregroundColor(paso.hecho ? .secondary : .primary)
+                                .strikethrough(paso.hecho)
+                                .multilineTextAlignment(.leading)
+                            Spacer(minLength: 0)
+                            if !paso.hecho {
+                                Image(systemName: "chevron.right")
+                                    .font(.app(.footnote).weight(.semibold))
+                                    .foregroundColor(Color.iconoSuave)
+                            }
+                        }
+                        .frame(minHeight: 48)
+                        .contentShape(Rectangle())
+                    }
+                    .buttonStyle(.plain)
+                    .disabled(paso.hecho)
+                    .accessibilityLabel(paso.hecho ? "\(paso.titulo), completado" : paso.titulo)
+                }
+            }
+        }
+        .padding(16)
+        .background(
+            RoundedRectangle(cornerRadius: 20)
+                .fill(Color.tintaSuave)
         )
     }
 }
@@ -216,17 +425,19 @@ struct EstadoErrorView: View {
     var body: some View {
         VStack(spacing: 10) {
             Image(systemName: "wifi.exclamationmark")
-                .font(.system(size: 32))
+                .font(.app(.largeTitle))
                 .foregroundColor(.brandRed)
+                .accessibilityHidden(true)
             Text("No pudimos cargar la información")
-                .font(.headline)
+                .font(.app(.headline))
             Text(mensaje)
-                .font(.subheadline)
-                .foregroundColor(.secondary)
+                .font(.app(.subheadline))
+                .foregroundColor(.textoSuave)
                 .multilineTextAlignment(.center)
             Button("Reintentar", action: reintentar)
-                .font(.subheadline.weight(.bold))
+                .font(.app(.subheadline).weight(.bold))
                 .foregroundColor(.brandRed)
+                .frame(minHeight: 44)
         }
         .padding(20)
         .frame(maxWidth: .infinity)
@@ -234,7 +445,6 @@ struct EstadoErrorView: View {
 }
 
 #Preview {
-    DashboardView()
+    MainTabView()
         .environment(FamiliaresStore())
-        .environment(RecordatoriosStore())
 }

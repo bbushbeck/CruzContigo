@@ -5,11 +5,12 @@ struct ContentView: View {
     @AppStorage("onboardingCompletado") private var onboardingCompletado = false
     @State private var familiaresStore = FamiliaresStore()
     @State private var recordatoriosStore = RecordatoriosStore()
+    @State private var preferencias = Preferencias.compartidas
 
     var body: some View {
         Group {
             if onboardingCompletado {
-                DashboardView()
+                MainTabView()
                     .transition(.opacity)
             } else {
                 OnboardingFlowView {
@@ -22,6 +23,9 @@ struct ContentView: View {
         }
         .environment(familiaresStore)
         .environment(recordatoriosStore)
+        .environment(preferencias)
+        .aplicarPreferencias(preferencias)
+        .environment(\.locale, Locale(identifier: "es_MX"))
     }
 }
 
@@ -57,5 +61,5 @@ struct OnboardingFlowView: View {
 }
 
 #Preview {
-    ContentView()
+   // ContentView()
 }

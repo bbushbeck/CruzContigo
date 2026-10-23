@@ -39,7 +39,7 @@ struct EditFichaMedicaView: View {
                 Button("Cancelar") { dismiss() }
                     .foregroundColor(.brandRed)
                 Spacer()
-                Text("Ficha médica").font(.headline)
+                Text("Ficha médica").font(.app(.headline))
                 Spacer()
                 Button("Cancelar") {}.hidden()
             }
@@ -52,8 +52,8 @@ struct EditFichaMedicaView: View {
                         Text(nombre.isEmpty ? "Datos médicos" : "Datos médicos de \(nombre)")
                             .font(.system(size: 26, weight: .bold))
                         Text("Usa datos ficticios durante las pruebas.")
-                            .font(.footnote)
-                            .foregroundColor(.secondary)
+                            .font(.app(.footnote))
+                            .foregroundColor(.textoSuave)
                     }
 
                     FormFieldContainer(
@@ -86,7 +86,7 @@ struct EditFichaMedicaView: View {
             VStack(spacing: 10) {
                 if intentoGuardar, let primerError = fichaFinal.errores.first {
                     Text(primerError)
-                        .font(.footnote)
+                        .font(.app(.footnote))
                         .foregroundColor(.brandRed)
                 }
                 PrimaryButton(title: guardando ? "Guardando…" : "Guardar ficha") {
@@ -112,7 +112,7 @@ struct EditFichaMedicaView: View {
 
     private var seccionAlergias: some View {
         VStack(alignment: .leading, spacing: 10) {
-            Text("Alergias").font(.title3).fontWeight(.bold)
+            Text("Alergias").font(.app(.title3)).fontWeight(.bold)
 
             ForEach(ficha.alergias) { alergia in
                 FilaEditable(texto: alergia.nombre) {
@@ -145,7 +145,7 @@ struct EditFichaMedicaView: View {
 
     private var seccionEnfermedades: some View {
         VStack(alignment: .leading, spacing: 10) {
-            Text("Enfermedades").font(.title3).fontWeight(.bold)
+            Text("Enfermedades").font(.app(.title3)).fontWeight(.bold)
 
             ForEach(ficha.enfermedades) { enfermedad in
                 FilaEditable(texto: enfermedad.nombre) {
@@ -204,8 +204,8 @@ private struct FilaEditable<Accesorio: View>: View {
             accesorio
             Button(action: eliminar) {
                 Image(systemName: "minus.circle.fill")
-                    .font(.title3)
-                    .foregroundColor(Color(white: 0.7))
+                    .font(.app(.title3))
+                    .foregroundColor(Color.iconoSuave)
             }
             .accessibilityLabel("Eliminar \(texto)")
         }
@@ -222,7 +222,7 @@ private struct BotonAgregar: View {
     var body: some View {
         Button(action: accion) {
             Image(systemName: "plus")
-                .font(.headline)
+                .font(.app(.headline))
                 .foregroundColor(.white)
                 .frame(width: 48, height: 48)
                 .background(RoundedRectangle(cornerRadius: 14).fill(Color.brandRed))

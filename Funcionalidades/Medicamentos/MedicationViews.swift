@@ -27,15 +27,14 @@ struct MedicationsView: View {
             HStack {
                 BrandBackButton { dismiss() }
                 Spacer()
-                Text("Medicamentos").font(.headline)
+                Text("Medicamentos").font(.app(.headline))
                 Spacer()
                 Button { showingAdd = true } label: {
                     Image(systemName: "plus")
-                        .font(.title3)
+                        .font(.app(.title3))
                         .foregroundColor(.brandRed)
                         .frame(width: 44, height: 44)
-                        .background(Color.brandRed.opacity(0.08))
-                        .cornerRadius(12)
+                        .contentShape(Rectangle())
                 }
                 .accessibilityLabel("Agregar medicamento")
             }
@@ -54,9 +53,9 @@ struct MedicationsView: View {
                                 .font(.system(size: 45))
                                 .foregroundStyle(MedicalStyle.red.opacity(0.35))
                             VStack(alignment: .leading, spacing: 4) {
-                                Text(recipient.name).font(.headline)
+                                Text(recipient.name).font(.app(.headline))
                                 Text("\(recipient.age) años · Seleccionar familiar")
-                                    .font(.subheadline).foregroundStyle(.secondary)
+                                    .font(.app(.subheadline)).foregroundStyle(Color.textoSuave)
                             }
                             Spacer()
                             Image(systemName: "chevron.down").foregroundStyle(MedicalStyle.red)
@@ -84,18 +83,18 @@ struct MedicationsView: View {
                                 } label: {
                                     HStack(spacing: 12) {
                                         Image(systemName: "pills.fill")
-                                            .font(.title2)
+                                            .font(.app(.title2))
                                             .foregroundStyle(MedicalStyle.red)
                                             .frame(width: 48, height: 48)
                                             .background(MedicalStyle.pale, in: RoundedRectangle(cornerRadius: 12))
                                         VStack(alignment: .leading, spacing: 4) {
-                                            Text(medication.name).font(.headline).foregroundStyle(.primary)
-                                            Text(medication.dose).foregroundStyle(.secondary)
+                                            Text(medication.name).font(.app(.headline)).foregroundStyle(.primary)
+                                            Text(medication.dose).foregroundStyle(Color.textoSuave)
                                             Text(medication.status == .active ? medication.frequency : "Tratamiento anterior")
-                                                .font(.caption).foregroundStyle(.secondary)
+                                                .font(.app(.caption)).foregroundStyle(Color.textoSuave)
                                         }
                                         Spacer()
-                                        Image(systemName: "chevron.right").foregroundStyle(.secondary)
+                                        Image(systemName: "chevron.right").foregroundStyle(Color.textoSuave)
                                     }
                                     .padding(14)
                                     .background(.white, in: RoundedRectangle(cornerRadius: 16))
@@ -105,7 +104,7 @@ struct MedicationsView: View {
                         }
                     }
                     Label("Los cambios se guardan solo durante esta sesión de demostración.", systemImage: "info.circle")
-                        .font(.footnote).foregroundStyle(.secondary)
+                        .font(.app(.footnote)).foregroundStyle(Color.textoSuave)
                 }
                 .padding()
             }
@@ -142,7 +141,7 @@ struct MedicationDetailView: View {
                 List {
                     Section {
                         Label(medication.name, systemImage: "pills.fill")
-                            .font(.title2.bold())
+                            .font(.app(.title2).bold())
                             .foregroundStyle(MedicalStyle.red)
                         LabeledContent("Estado", value: medication.status.rawValue)
                     }
@@ -237,7 +236,7 @@ struct MedicationFormView: View {
             }
             Section {
                 Text("Registra únicamente indicaciones confirmadas por un profesional de salud. Esta app no calcula ni recomienda dosis.")
-                    .font(.footnote).foregroundStyle(.secondary)
+                    .font(.app(.footnote)).foregroundStyle(Color.textoSuave)
             }
         }
         .navigationTitle(editing == nil ? "Agregar medicamento" : "Editar medicamento")

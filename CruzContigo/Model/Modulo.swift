@@ -6,55 +6,75 @@
 import Foundation
 
 enum Modulo: String, CaseIterable, Identifiable, Hashable {
-    case fichaMedica, medicamentos, citas, redCuidado, emergencia, ayuda
+    case fichaMedica, medicamentos, recordatorios, citas, emergencia, redCuidado, comunidad, bienestar, ayuda, accesibilidad
 
     var id: String { rawValue }
 
     var titulo: String {
         switch self {
-        case .fichaMedica: "Ficha médica"
+        case .fichaMedica: "Información médica"
         case .medicamentos: "Medicamentos"
-        case .citas: "Citas"
+        case .recordatorios: "Recordatorios"
+        case .citas: "Citas médicas"
+        case .emergencia: "Ficha de emergencia"
         case .redCuidado: "Red de cuidado"
-        case .emergencia: "Emergencia"
-        case .ayuda: "Ayuda cercana"
+        case .comunidad: "Avisos de Cruz Roja"
+        case .bienestar: "Tu bienestar"
+        case .ayuda: "Directorio y donaciones"
+        case .accesibilidad: "Accesibilidad"
         }
     }
 
     var subtitulo: String {
         switch self {
-        case .fichaMedica: "Alergias, enfermedades y tipo de sangre"
+        case .fichaMedica: "Alergias, padecimientos y tipo de sangre"
         case .medicamentos: "Tratamientos y registro de tomas"
-        case .citas: "Agenda y recordatorios"
-        case .redCuidado: "Invita a otros cuidadores"
-        case .emergencia: "Ficha sin conexión (demo)"
-        case .ayuda: "Opciones de apoyo y donación"
+        case .recordatorios: "Avisos de tomas y pendientes"
+        case .citas: "Agenda y notas de cada consulta"
+        case .emergencia: "Resumen disponible sin conexión"
+        case .redCuidado: "Invita a otras personas a cuidar contigo"
+        case .comunidad: "Campañas, cursos y comunicados"
+        case .bienestar: "Cuida también de ti"
+        case .ayuda: "Sedes, servicios y enlace oficial de donación"
+        case .accesibilidad: "Letra para dislexia, modo oscuro, tamaño y más"
         }
     }
 
     var icono: String {
         switch self {
-        case .fichaMedica: "doc.text.fill"
+        case .fichaMedica: "cross.case.fill"
         case .medicamentos: "pills.fill"
+        case .recordatorios: "bell.fill"
         case .citas: "calendar"
-        case .redCuidado: "person.3.fill"
         case .emergencia: "staroflife.fill"
-        case .ayuda: "hand.raised.fill"
+        case .redCuidado: "person.3.fill"
+        case .comunidad: "megaphone.fill"
+        case .bienestar: "heart.circle.fill"
+        case .ayuda: "mappin.and.ellipse"
+        case .accesibilidad: "accessibility"
         }
     }
 
     var sprint: Int {
         switch self {
-        case .fichaMedica, .medicamentos, .citas: 2
-        case .redCuidado: 1
-        case .emergencia, .ayuda: 3
+        case .redCuidado, .accesibilidad: 1
+        case .fichaMedica, .medicamentos, .recordatorios, .citas: 2
+        case .emergencia, .comunidad, .bienestar, .ayuda: 3
         }
     }
 
     var esPorFamiliar: Bool {
         switch self {
-        case .fichaMedica, .medicamentos, .citas: true
+        case .fichaMedica, .medicamentos, .recordatorios, .citas, .emergencia: true
         default: false
         }
     }
+
+    static let disponibles: Set<Modulo> = [.fichaMedica, .medicamentos, .recordatorios, .citas, .accesibilidad]
+
+    var disponible: Bool { Self.disponibles.contains(self) }
+
+    static let accesosRapidos: [Modulo] = [.fichaMedica, .medicamentos, .recordatorios]
+    static let delPerfil: [Modulo] = [.fichaMedica, .medicamentos, .recordatorios, .citas, .emergencia]
+    static let generales: [Modulo] = [.accesibilidad, .redCuidado, .comunidad, .bienestar, .ayuda]
 }
